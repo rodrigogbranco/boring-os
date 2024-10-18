@@ -1,4 +1,5 @@
 global _start
+
 _start:
     jmp print_s
 
