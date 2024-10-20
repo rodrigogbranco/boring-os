@@ -1,9 +1,6 @@
 global _start
 
 _start:
-    jmp print_s
-
-print_s:
     mov ah, 0x0e
     mov al, 'S'
     mov bh, 0x00
