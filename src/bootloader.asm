@@ -37,6 +37,7 @@ print_string:
 
     mov si, [bp+4]
 
+    cld
 loop_print_string:
     lodsb
 
@@ -64,7 +65,22 @@ load_kernel:
 
     mov ax, SEGMENTS_BOOTLOADER
     mov ds, ax
+    mov ax, NEW_BOOTLOADER_SEGMENT
     mov es, ax
+
+    mov si, BOOTLOADER_INIT
+    mov di, BOOTLOADER_INIT
+
+    mov cx, SECTOR_SIZE
+
+    cld
+    rep movsb
+before_jump:
+    jmp word NEW_BOOTLOADER_SEGMENT:new_boot_region
+    
+new_boot_region:
+    mov ax, NEW_BOOTLOADER_SEGMENT
+    mov ds, ax
   
     mov ax, 'p'
     push ax
