@@ -11,6 +11,15 @@
 %define BIOS_INT_10H_PAGE_NUMBER_0 0x00
 %define BIOS_INT_10H_FOREGROUND_COLOR_GM 0x02
 
+%define BIOS_INT_13H 0x13
+%define BIOS_INT_13H_READ 0x02
+%define BIOS_INT_13H_CYLINDER_NUMBER 0x0
+%define BIOS_INT_13H_HEAD_NUMBER 0x0
+%define BIOS_INT_13H_SECTOR_NUMBER 0x2 ;it starts from 1, so we want the second one
+
+%define KERNEL_SEGMENT 0x0000
+%define KERNEL_INIT 0x1000
+
 %define NULL_CHARACTER 0
 
 %define LINE_FEED 10
