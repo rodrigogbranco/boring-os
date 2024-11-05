@@ -14,7 +14,7 @@ print_char:
     push ax
     push bx
 
-    mov ax, [bp+4]
+    mov ax, [bp+6]
     mov ah, BIOS_INT_10H_OUTPUT
     mov bh, BIOS_INT_10H_PAGE_NUMBER_0
     mov bl, BIOS_INT_10H_FOREGROUND_COLOR_GM
@@ -25,7 +25,7 @@ print_char:
 
     pop bp
 
-    ret
+    retf
 
 print_string:
     push bp
@@ -35,7 +35,7 @@ print_string:
     push bx
     push si
 
-    mov si, [bp+4]
+    mov si, [bp+6]
 
     cld
 loop_print_string:
@@ -45,7 +45,7 @@ loop_print_string:
     je end_print_string
 
     push ax
-    call print_char
+    call KERNEL_SEGMENT:print_char
     pop ax
     jmp loop_print_string
 
@@ -56,7 +56,7 @@ end_print_string:
 
     pop bp
 
-    ret
+    retf
 
 kernel_entry:
     mov ax, cs
@@ -65,9 +65,25 @@ kernel_entry:
 
     mov ax, msg
     push ax
-    call print_string
+    call KERNEL_SEGMENT:print_string
+    pop ax
+
+    jmp 0x3000:big_dummy_kernel
+
+msg db "Dummy Kernel Loaded!", CARRIER_RETURN, LINE_FEED, NULL_CHARACTER
+
+TIMES 0x30000-($-$$) DB 0
+
+big_dummy_kernel:
+    mov ax, cs
+    mov ds, ax
+    mov es, ax
+
+    mov ax, big_msg
+    push ax
+    call KERNEL_SEGMENT:print_string
     pop ax
 
     jmp $
 
-msg db "Dummy Kernel Loaded!", CARRIER_RETURN, LINE_FEED, NULL_CHARACTER
+big_msg db "Big Dummy Kernel Loaded!", CARRIER_RETURN, LINE_FEED, NULL_CHARACTER   

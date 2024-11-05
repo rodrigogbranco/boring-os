@@ -8,10 +8,22 @@ _start:
     jmp load_kernel
 
 os_size:
-    dw 1, 0
+    dw 385, 0
 
 disk_index: 
-    db 0xff
+    db 11111111b
+
+sectors_per_track:
+    db 0
+
+number_of_heads:
+    db 0
+
+current_lba_address:
+    dw 1
+
+track_number:
+    db 0    
 
 load_kernel:
     mov ax, STACK_SEG_BOOTLOADER
@@ -29,7 +41,7 @@ load_kernel:
 
     mov cx, SECTOR_SIZE
 
-    mov [ds:disk_index], dl
+    mov [disk_index], dl
 
     cld
     rep movsb
@@ -40,17 +52,58 @@ new_boot_region:
     mov ax, NEW_BOOTLOADER_SEGMENT
     mov ds, ax
 
-    mov ah, BIOS_INT_13H_READ
-    mov al, [ds:os_size]
-    mov ch, BIOS_INT_13H_CYLINDER_NUMBER
-    mov dh, BIOS_INT_13H_HEAD_NUMBER    
-    mov cl, BIOS_INT_13H_SECTOR_NUMBER
-    mov dl, [ds:disk_index]
+    mov dl, [disk_index]
+    mov ah, BIOS_INT_13H_RESET_DISK_SYSTEM
+
+    mov ah, BIOS_INT_13H_GET_DISK_GEOMETRY
+    push es
+    xor di, di
+    mov es, di
+    int BIOS_INT_13H
+    pop es
+
+get_parameters:
+    mov [number_of_heads], dh
+    inc byte [number_of_heads]
+
+    and cl, BIOS_INT_13H_SECTOR_MASK
+    mov [sectors_per_track], cl
+
     mov bx, KERNEL_SEGMENT
-    mov es, bx
-    mov bx, KERNEL_INIT
+    mov es, bx    
+
+read_sector:
+    mov ax, [current_lba_address]
+
+    cmp ax, word [os_size]
+    jg end_read_sector
+
+    mov bl, [sectors_per_track]
+    div bl
+    inc ah
+    mov cl, ah
+    mov [track_number], al
+    xor ah, ah
+
+    div byte [number_of_heads]
+    mov dh, ah
+    mov ch, al
+
+    mov dl, [disk_index]
+    mov al, BIOS_INT_13H_SECTOR_COUNT
+    mov ah, BIOS_INT_13H_READ
+    mov bx, KERNEL_INIT      
     int BIOS_INT_13H
 
+    mov ax, es
+    add ax, BIOS_INT_13H_SEGMENT_OFFSET
+    mov es, ax
+
+    add word [current_lba_address], BIOS_INT_13H_SECTOR_COUNT
+
+    jmp read_sector
+
+end_read_sector:
     jmp KERNEL_SEGMENT:KERNEL_INIT
 
 TIMES 510-($-$$) DB 0
