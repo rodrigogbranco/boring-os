@@ -96,6 +96,8 @@ read_sector:
     mov bx, KERNEL_INIT ; bx will be always the same. es is the register that will change     
     int BIOS_INT_13H
 
+    jc read_sector ; if CF is set, an error occurred. Try again
+
     mov ax, es
     add ax, BIOS_INT_13H_SEGMENT_OFFSET
     mov es, ax ; we've read BIOS_INT_13H_SECTOR_COUNT*SECTOR_SIZE bytes. move es to new position (move to segment BIOS_INT_13H_SEGMENT_OFFSET)
