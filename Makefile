@@ -1,8 +1,11 @@
 SRCDIR=src
 OUTPUTDIR=build
 
-all: kernel bootloader
+all: $(OUTPUTDIR) kernel bootloader
 	cat $(OUTPUTDIR)/bootloader $(OUTPUTDIR)/kernel > $(OUTPUTDIR)/boringos.img
+
+$(OUTPUTDIR):
+	mkdir $@
 
 %.o: $(SRCDIR)/%.asm
 	nasm -wall -O2 -f elf32 -F dwarf -g -o $(OUTPUTDIR)/$@ $<
