@@ -8,7 +8,7 @@ _start:
     jmp load_kernel
 
 os_size: ;in sectors
-    dw 385, 0
+    dw 769, 0
 
 disk_index: ;if floppy, code will change it to 0
     db 11111111b
