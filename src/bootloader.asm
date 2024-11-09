@@ -55,6 +55,7 @@ reset_disk:
     mov ah, BIOS_INT_13H_RESET_DISK_SYSTEM
     jc reset_disk ; reset went wrong. Try again
 
+get_disk_parameters:
     ; let's get disk geometry
     mov ah, BIOS_INT_13H_GET_DISK_GEOMETRY
     push es
@@ -62,6 +63,7 @@ reset_disk:
     mov es, di ; hack to get es:di = 0x0000:0x0000
     int BIOS_INT_13H
     pop es
+    jc get_disk_parameters ; get_disk_parameters went wrong. Try again
 
     mov [number_of_heads], dh
     inc byte [number_of_heads]
