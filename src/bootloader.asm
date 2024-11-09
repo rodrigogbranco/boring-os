@@ -50,8 +50,10 @@ new_boot_region:
     mov ds, ax
 
     ; let's reset the disk system first
+reset_disk:
     mov dl, [disk_index]
     mov ah, BIOS_INT_13H_RESET_DISK_SYSTEM
+    jc reset_disk ; reset went wrong. Try again
 
     ; let's get disk geometry
     mov ah, BIOS_INT_13H_GET_DISK_GEOMETRY
