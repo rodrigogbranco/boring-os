@@ -13,7 +13,7 @@ os_size: ;in sectors
 disk_index: ;if floppy, code will change it to 0
     db 11111111b
 
-sectors_per_track: ; 
+sectors_per_track:
     db 0
 
 number_of_heads:
