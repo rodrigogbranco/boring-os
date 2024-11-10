@@ -104,7 +104,7 @@ read_sector:
 
     mov ax, es
     add ax, BIOS_INT_13H_SEGMENT_OFFSET
-    mov es, ax ; we've read BIOS_INT_13H_SECTOR_COUNT*SECTOR_SIZE bytes. move es to new position (move to segment BIOS_INT_13H_SEGMENT_OFFSET)
+    mov es, ax ; we've read BIOS_INT_13H_SECTOR_COUNT*SECTOR_SIZE bytes. Move es to new position (move to segment BIOS_INT_13H_SEGMENT_OFFSET)
 
     add word [current_lba_address], BIOS_INT_13H_SECTOR_COUNT ; move LBA pointer
 
