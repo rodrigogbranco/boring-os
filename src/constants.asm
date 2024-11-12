@@ -28,5 +28,3 @@
 
 %define LINE_FEED 10
 %define CARRIER_RETURN 13
-
-%define BOOT_SIGNATURE db 0x55, 0xaa

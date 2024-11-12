@@ -4,6 +4,8 @@
 
 global _start
 
+SECTION .text
+
 _start:
     jmp kernel_entry
 
@@ -103,3 +105,12 @@ big_big_dummy_kernel:
     jmp $
 
 big_big_msg db "Big Big Dummy Kernel Loaded!", CARRIER_RETURN, LINE_FEED, NULL_CHARACTER   
+
+SECTION .data
+datasegtest db 'X'
+
+SECTION .bss
+bsssegtest:  resb 50
+
+SECTION .rdata
+teste db 'readonlydata'

@@ -4,11 +4,13 @@
 
 global _start
 
+SECTION .text
+
 _start:
     jmp load_kernel
 
 os_size: ;in sectors
-    dw 769, 0
+    dw 0, 0
 
 disk_index: ;if floppy, code will change it to 0
     db 11111111b
@@ -113,7 +115,3 @@ read_sector:
 end_read_sector:
     ; the kernel is entirely in the memory. Jump to its start address
     jmp KERNEL_SEGMENT:KERNEL_INIT
-
-TIMES 510-($-$$) DB 0
-
-BOOT_SIGNATURE

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 # This script created by AQEMU
 
 CURRDIR=`pwd`
