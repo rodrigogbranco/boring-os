@@ -106,11 +106,12 @@ big_big_dummy_kernel:
 
 big_big_msg db "Big Big Dummy Kernel Loaded!", CARRIER_RETURN, LINE_FEED, NULL_CHARACTER   
 
-SECTION .data
-datasegtest db 'X'
 
 SECTION .bss
-bsssegtest:  resb 50
+bsssegtest  resb 50
+
+SECTION .data
+datasegtest db 'X'
 
 SECTION .rdata
 teste db 'readonlydata'
