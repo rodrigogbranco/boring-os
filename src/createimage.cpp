@@ -56,12 +56,12 @@ std::vector<u_int8_t> extract_segments(std::string exec_path,
   return exec_bytes;
 }
 
-std::vector<Elf32_Phdr> read_exec_file(std::ifstream &exec_file,
-                                       Elf32_Ehdr *ehdr) {
-  exec_file.read(reinterpret_cast<char *>(ehdr), sizeof(Elf32_Ehdr));
-  exec_file.seekg(ehdr->e_phoff, std::ios_base::beg);
+std::vector<Elf32_Phdr> read_exec_file(std::ifstream &exec_file) {
+  Elf32_Ehdr ehdr;
+  exec_file.read(reinterpret_cast<char *>(&ehdr), sizeof(Elf32_Ehdr));
+  exec_file.seekg(ehdr.e_phoff, std::ios_base::beg);
   std::vector<Elf32_Phdr> program_headers;
-  for (int i = 0; i < ehdr->e_phnum; i++) {
+  for (int i = 0; i < ehdr.e_phnum; i++) {
     Elf32_Phdr ph;
     exec_file.read(reinterpret_cast<char *>(&ph), sizeof(Elf32_Phdr));
 
@@ -135,10 +135,7 @@ int main(int argc, char *argv[], char *envp[]) {
         return 1;
       }
 
-      Elf32_Ehdr booloader_eh;
-
-      std::vector<Elf32_Phdr> bootloader_hs =
-          read_exec_file(bootloader_if, &booloader_eh);
+      std::vector<Elf32_Phdr> bootloader_hs = read_exec_file(bootloader_if);
 
       bootloader_bytearray =
           write_bootblock(arg, bootloader_hs, bootloader_if, output_string);
@@ -151,8 +148,7 @@ int main(int argc, char *argv[], char *envp[]) {
         return 1;
       }
 
-      Elf32_Ehdr kernel_eh;
-      std::vector<Elf32_Phdr> kernel_hs = read_exec_file(kernel_if, &kernel_eh);
+      std::vector<Elf32_Phdr> kernel_hs = read_exec_file(kernel_if);
 
       kernel_bytearray = write_kernel(arg, kernel_hs, kernel_if, output_string);
 
