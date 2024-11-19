@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 
+#define SECTOR_SIZE 512
+
 std::vector<u_int8_t> extract_segments(std::string exec_path,
                                        std::vector<Elf32_Phdr> ph,
                                        std::ifstream &exec_file,
@@ -42,13 +44,14 @@ std::vector<u_int8_t> extract_segments(std::string exec_path,
                         uint8_t(0));
       extended_string << "\t\tpadding up to 0x" << std::hex << std::setw(4)
                       << std::setfill('0') << ph[i + 1].p_vaddr << std::endl;
-    } else if (i == ph.size() - 1 && exec_bytes.size() % 512 > 0) {
+    } else if (i == ph.size() - 1 && exec_bytes.size() % SECTOR_SIZE > 0) {
       extended_string << "\t\tpadding up to 0x" << std::hex << std::setw(4)
                       << std::setfill('0')
                       << ph[i].p_vaddr + ph[i].p_memsz +
-                             (512 - (exec_bytes.size() % 512))
+                             (SECTOR_SIZE - (exec_bytes.size() % SECTOR_SIZE))
                       << std::endl;
-      exec_bytes.insert(exec_bytes.end(), 512 - (exec_bytes.size() % 512),
+      exec_bytes.insert(exec_bytes.end(),
+                        SECTOR_SIZE - (exec_bytes.size() % SECTOR_SIZE),
                         uint8_t(0));
     }
   }
@@ -100,9 +103,9 @@ std::vector<u_int8_t> write_kernel(std::string kernel_path,
 
 uint32_t count_kernel_sectors(std::vector<u_int8_t> &exec_bytes,
                               std::ostringstream &extended_string) {
-  uint32_t os_size = exec_bytes.size() % 512 != 0
-                         ? uint32_t(exec_bytes.size() / 512) + 1
-                         : uint32_t(exec_bytes.size() / 512);
+  uint32_t os_size = exec_bytes.size() % SECTOR_SIZE != 0
+                         ? uint32_t(exec_bytes.size() / SECTOR_SIZE) + 1
+                         : uint32_t(exec_bytes.size() / SECTOR_SIZE);
 
   extended_string << "os_size: " << std::dec << os_size << " sectors"
                   << std::endl;
