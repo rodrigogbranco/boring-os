@@ -42,7 +42,7 @@ std::vector<u_int8_t> extract_segments(std::string exec_path,
                         uint8_t(0));
       extended_string << "\t\tpadding up to 0x" << std::hex << std::setw(4)
                       << std::setfill('0') << ph[i + 1].p_vaddr << std::endl;
-    } else if (exec_bytes.size() % 512 > 0) {
+    } else if (i == ph.size() - 1 && exec_bytes.size() % 512 > 0) {
       extended_string << "\t\tpadding up to 0x" << std::hex << std::setw(4)
                       << std::setfill('0')
                       << ph[i].p_vaddr + ph[i].p_memsz +
