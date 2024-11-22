@@ -1,22 +1,11 @@
-#include "include/util.h"
-
-extern void clear_screen();
+#include "include/screen.h"
 
 extern "C" void _start() {
   const char *kernelMsg = "Hello Protected Mode!";
 
-  clear_screen();
+  clear_screen(WHITE, BLACK);
 
-  char *currentMsg = (char *)kernelMsg;
-  char *currentScreenPointer = (char *)SCREEN_POINTER;
-  do {
-    if (*currentMsg == NULL) {
-      break;
-    }
-
-    *currentScreenPointer++ = *currentMsg++;
-    *currentScreenPointer++ = CHAR_ATTR;
-  } while (*currentMsg != NULL);
+  printk((char *)kernelMsg, YELLOW, RED);
 
   while (true) {
     /* BUSY LOOP*/
