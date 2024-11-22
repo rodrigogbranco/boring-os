@@ -22,7 +22,35 @@ number_of_heads:
     db 0
 
 current_lba_address: ; second sector
-    dw 1 
+    dw 1
+
+gdt:
+
+gdt_null:
+    dq 0
+
+gdt_kcs:
+    dw GDT_KCS_LIMIT_BYTES_0_1, GDT_KCS_BASE_BYTES_2_3
+    db GDT_KCS_BASE_BYTE_4, GDT_KCS_ACCESS_BYTE_5 , GDT_KCS_MIDDLE_LIMIT_FLAGS_BYTE_6, GDT_KCS_BASE_BYTE_7
+
+gdt_kds:
+    dw GDT_KDS_LIMIT_BYTES_0_1, GDT_KDS_BASE_BYTES_2_3
+    db GDT_KDS_BASE_BYTE_4, GDT_KDS_ACCESS_BYTE_5 , GDT_KDS_MIDDLE_LIMIT_FLAGS_BYTE_6, GDT_KDS_BASE_BYTE_7
+
+gdt_ucs:
+    dq 0
+
+gdt_uds:
+    dq 0
+
+gdt_tss:
+    dq 0
+
+gdt_end:
+
+gdt_pointer:
+    dw gdt_end - gdt - 1
+    dd gdt+0x80000
 
 load_kernel:
     mov ax, STACK_SEG_BOOTLOADER
@@ -113,5 +141,32 @@ read_sector:
     jmp read_sector
 
 end_read_sector:
-    ; the kernel is entirely in the memory. Jump to its start address
-    jmp KERNEL_SEGMENT:KERNEL_INIT
+    ; the kernel is entirely in the memory.     
+
+    ; Let's enable A20 gate
+    mov ax, BIOS_INT_15H_ENABLE_A20
+    int BIOS_INT_15H
+    jnc a20_success
+
+    ; write here code for Keyboard Controller or 0x92 Port!!!
+
+a20_success:
+   ; clear interruptions. BIOS INT will not be accessible anymore!
+    cli
+
+    lgdt [gdt_pointer]
+
+    mov eax, cr0
+    or eax, 0x1
+    mov cr0, eax
+
+    mov ax, GDT_DS
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, NEW_STACK_POINTER
+    mov ebp, esp    
+
+    jmp GDT_CS:KERNEL_INIT

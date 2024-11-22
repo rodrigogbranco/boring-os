@@ -21,8 +21,40 @@
 %define BIOS_INT_13H_SECTOR_COUNT 1
 %define BIOS_INT_13H_SEGMENT_OFFSET (SECTOR_SIZE*BIOS_INT_13H_SECTOR_COUNT)/16
 
+%define BIOS_INT_15H 0x15
+%define BIOS_INT_15H_ENABLE_A20 0x2401
+
 %define KERNEL_SEGMENT 0x0000
 %define KERNEL_INIT 0x1000
+
+%define GDT_KCS_LIMIT 0xffffffff
+%define GDT_KCS_BASE 0x00000000
+%define GDT_KCS_MIDDLE_LIMIT  (GDT_KCS_LIMIT >> 16) & 0x0f ; lower 4 bits
+%define GDT_KCS_FLAGS (1100b << 4)  ; 0 - 0 - (1) 32bit -  (1) 4Kb unit ; upper 4 bits
+
+%define GDT_KCS_LIMIT_BYTES_0_1  GDT_KCS_LIMIT & 0xffff
+%define GDT_KCS_BASE_BYTES_2_3  GDT_KCS_BASE & 0xffff
+%define GDT_KCS_BASE_BYTE_4  (GDT_KCS_BASE >> 16) & 0xff
+%define GDT_KCS_ACCESS_BYTE_5 10011010b ; (0) not used now - (1) readable - (0) user code can run here? - (1) code segment - (1) not system segment - (00) DPL/ring 0 - (1) present
+%define GDT_KCS_MIDDLE_LIMIT_FLAGS_BYTE_6 GDT_KCS_MIDDLE_LIMIT | GDT_KCS_FLAGS
+%define GDT_KCS_BASE_BYTE_7 (GDT_KCS_BASE >> 24) & 0xff
+
+%define GDT_KDS_LIMIT GDT_KCS_LIMIT
+%define GDT_KDS_BASE GDT_KCS_BASE
+%define GDT_KDS_MIDDLE_LIMIT  GDT_KCS_MIDDLE_LIMIT
+%define GDT_KDS_FLAGS GDT_KCS_FLAGS
+
+%define GDT_KDS_LIMIT_BYTES_0_1  GDT_KCS_LIMIT_BYTES_0_1
+%define GDT_KDS_BASE_BYTES_2_3  GDT_KCS_BASE_BYTES_2_3
+%define GDT_KDS_BASE_BYTE_4  GDT_KCS_BASE_BYTE_4
+%define GDT_KDS_ACCESS_BYTE_5 10010010b ; 0 (not used now) - (1) writable - (0) expand down - (0) data segment - (1) not system segment - (00) DPL/ring 0 - (1) present
+%define GDT_KDS_MIDDLE_LIMIT_FLAGS_BYTE_6 GDT_KCS_MIDDLE_LIMIT_FLAGS_BYTE_6
+%define GDT_KDS_BASE_BYTE_7 GDT_KCS_BASE_BYTE_7
+
+%define NEW_STACK_POINTER 0x9fffe
+
+%define GDT_CS 0x8
+%define GDT_DS 0x10
 
 %define NULL_CHARACTER 0
 
