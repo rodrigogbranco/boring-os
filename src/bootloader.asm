@@ -37,15 +37,6 @@ gdt_kds:
     dw GDT_KDS_LIMIT_BYTES_0_1, GDT_KDS_BASE_BYTES_2_3
     db GDT_KDS_BASE_BYTE_4, GDT_KDS_ACCESS_BYTE_5 , GDT_KDS_MIDDLE_LIMIT_FLAGS_BYTE_6, GDT_KDS_BASE_BYTE_7
 
-gdt_ucs:
-    dq 0
-
-gdt_uds:
-    dq 0
-
-gdt_tss:
-    dq 0
-
 gdt_end:
 
 gdt_pointer:
@@ -160,13 +151,13 @@ a20_success:
     or eax, 0x1
     mov cr0, eax
 
-    mov ax, GDT_DS
+    mov ax, gdt_kds - gdt
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
     mov ss, ax
-    mov esp, NEW_STACK_POINTER
+    mov esp, (STACK_SEG_BOOTLOADER * 16) + STACK_POINTER_BOOTLOADER
     mov ebp, esp    
 
-    jmp GDT_CS:KERNEL_INIT
+    jmp gdt_kcs - gdt:KERNEL_INIT
