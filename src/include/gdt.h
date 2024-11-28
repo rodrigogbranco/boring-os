@@ -62,7 +62,7 @@ public:
   void install_gdt_entry(uint32_t, uint32_t, uint8_t, uint8_t);
 } __attribute__((__packed__));
 
-class GDT_Pointer {
+class GDTPointer {
 public:
   uint16_t size = 0;
   uint32_t gdt_entries_address = 0;

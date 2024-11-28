@@ -2,7 +2,7 @@
 
 GDT gdt_entries[GDT_ENTRIES];
 
-GDT_Pointer gdtp;
+GDTPointer gdtp;
 
 void GDT::install_gdt_entry(uint32_t base_address, uint32_t limit, uint8_t type,
                             uint8_t flags) {
