@@ -41,7 +41,7 @@ gdt_end:
 
 gdt_pointer:
     dw gdt_end - gdt - 1
-    dd gdt+0x80000
+    dd gdt+(NEW_BOOTLOADER_SEGMENT << 4)
 
 load_kernel:
     mov ax, STACK_SEG_BOOTLOADER

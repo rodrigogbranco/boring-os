@@ -21,7 +21,7 @@
 %define KERNEL_SEGMENT 0x0000
 %define KERNEL_INIT 0x1000
 
-%define GDT_KCS_LIMIT 0xffffffff
+%define GDT_KCS_LIMIT 0xfffff
 %define GDT_KCS_BASE 0x00000000
 %define GDT_KCS_MIDDLE_LIMIT  (GDT_KCS_LIMIT >> 16) & 0x0f ; lower 4 bits
 %define GDT_KCS_FLAGS (1100b << 4)  ; 0 - 0 - (1) 32bit -  (1) 4Kb unit ; upper 4 bits
