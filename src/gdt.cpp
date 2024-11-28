@@ -15,8 +15,8 @@ void GDT::install_gdt_entry(uint32_t base_address, uint32_t limit, uint8_t type,
   this->base_address_byte_7 = (base_address >> 24) & 0xff;
 }
 
-void install_gdt_entries() {
-  // NULL descriptor is constructed by default
+void install_gdt() {
+  // NULL descriptor (gdt_entries[GDT_NULL_SEL]) is constructed by default
 
   // Kernel Code segment
   gdt_entries[GDT_KCS_SEL].install_gdt_entry(
@@ -36,9 +36,8 @@ void install_gdt_entries() {
           GDT_GRANULARITY_FLAG);
 
   // User code, data segments and TSS goes here
-}
 
-void load_gdt_register() {
+  // Load GDT
   gdtp.size = (uint16_t)(sizeof(GDT) * GDT_ENTRIES);
   gdtp.gdt_entries_address = (uint32_t)gdt_entries;
 

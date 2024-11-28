@@ -2,8 +2,7 @@
 #include "include/screen.h"
 
 extern "C" void _start() {
-  install_gdt_entries();
-  load_gdt_register();
+  install_gdt();
 
   const char *kernelMsg = "Hello Protected Mode!";
 

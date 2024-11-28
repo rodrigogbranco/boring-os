@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #define GDT_ENTRIES 3
+#define GDT_NULL_SEL 0
 #define GDT_KCS_SEL 1
 #define GDT_KDS_SEL 2
 
@@ -63,11 +64,10 @@ public:
 
 class GDT_Pointer {
 public:
-  uint16_t size;
-  uint32_t gdt_entries_address;
+  uint16_t size = 0;
+  uint32_t gdt_entries_address = 0;
 } __attribute__((__packed__));
 
-void install_gdt_entries();
-void load_gdt_register();
+void install_gdt();
 
 #endif
