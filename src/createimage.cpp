@@ -106,8 +106,6 @@ uint32_t count_kernel_sectors(std::vector<u_int8_t> &exec_bytes,
   uint32_t os_size = exec_bytes.size() % SECTOR_SIZE != 0
                          ? uint32_t(exec_bytes.size() / SECTOR_SIZE) + 1
                          : uint32_t(exec_bytes.size() / SECTOR_SIZE);
-  std::cout << exec_bytes.size() << std::endl;
-
   extended_string << "os_size: " << std::dec << os_size << " sectors"
                   << std::endl;
   return os_size;
