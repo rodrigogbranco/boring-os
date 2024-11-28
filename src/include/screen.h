@@ -4,8 +4,6 @@
 
 #define NULL 0
 #define SCREEN_POINTER (const char *)0xb8000
-#define CHAR_ATTR_BLACK_WHITE 0x0f
-#define CHAR_ATTR_RED_ 0x40
 #define NUM_ROWS 80
 #define NUM_COLUMNS 25
 
