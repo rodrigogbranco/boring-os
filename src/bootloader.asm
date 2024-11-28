@@ -157,7 +157,7 @@ a20_success:
     mov fs, ax
     mov gs, ax
     mov ss, ax
-    mov esp, (STACK_SEG_BOOTLOADER * 16) + STACK_POINTER_BOOTLOADER
+    mov esp, (STACK_SEG_BOOTLOADER << 4) + STACK_POINTER_BOOTLOADER
     mov ebp, esp    
 
     jmp gdt_kcs - gdt:KERNEL_INIT
