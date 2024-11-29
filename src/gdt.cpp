@@ -1,8 +1,9 @@
 #include "include/gdt.h"
+#include "include/screen.h"
 
 GDT gdt_entries[GDT_ENTRIES];
-
-GDTPointer gdtp;
+GDTPointer gdtp((uint16_t)(sizeof(GDT) * GDT_ENTRIES),
+                (uint32_t)&gdt_entries[0]);
 
 void GDT::install_gdt_entry(uint32_t base_address, uint32_t limit, uint8_t type,
                             uint8_t flags) {
@@ -17,6 +18,10 @@ void GDT::install_gdt_entry(uint32_t base_address, uint32_t limit, uint8_t type,
 
 void install_gdt() {
   // NULL descriptor (gdt_entries[GDT_NULL_SEL]) is constructed by default
+
+  clear_screen(GREEN, BLUE);
+
+  printk((char *)"chegou aqui", GREEN, BLUE);
 
   // Kernel Code segment
   gdt_entries[GDT_KCS_SEL].install_gdt_entry(
@@ -36,10 +41,6 @@ void install_gdt() {
           GDT_GRANULARITY_FLAG);
 
   // User code, data segments and TSS goes here
-
-  // Load GDT
-  gdtp.size = (uint16_t)(sizeof(GDT) * GDT_ENTRIES);
-  gdtp.gdt_entries_address = (uint32_t)gdt_entries;
 
   asm("lgdt %0" : : "m"(gdtp));
   asm("ljmp %0, $continue_load_gdt_register \n\t"

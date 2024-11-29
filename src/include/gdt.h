@@ -66,6 +66,11 @@ class GDTPointer {
 public:
   uint16_t size = 0;
   uint32_t gdt_entries_address = 0;
+
+  GDTPointer(uint16_t size, uint32_t address) {
+    this->size = size;
+    this->gdt_entries_address = address;
+  }
 } __attribute__((__packed__));
 
 void install_gdt();
