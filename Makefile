@@ -20,7 +20,7 @@ $(OUTPUTDIR):
 	nasm -wall -O2 -f elf32 -F dwarf -g -o $(OUTPUTDIR)/$@ $<
 
 %.o: $(SRCDIR)/%.cpp
-	$(CC) -g -m32 -c $< -o $(OUTPUTDIR)/$@ -ffreestanding -O2 -Wall -Wextra -fno-exceptions -nostdlib -fno-rtti -nodefaultlibs -nostartfiles
+	$(CC) -g -m32 -c $< -o $(OUTPUTDIR)/$@ -ffreestanding -O2 -Wall -Wextra -fno-exceptions -nostdlib -fno-rtti -nodefaultlibs -nostartfiles -fno-use-cxa-atexit
 
 bootloader: bootloader.o
 	ld -nostdlib -O2 -g -m elf_i386 -Ttext 0x0 -o $(OUTPUTDIR)/$@ $(OUTPUTDIR)/$<

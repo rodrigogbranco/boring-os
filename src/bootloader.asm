@@ -161,6 +161,6 @@ a20_success:
     mov ebp, esp    
 
     push 0x0000 ; _start in kernel.cpp (upper 16bit)
-    push 0x1030 ; _start in kernel.cpp (lower 16bit)
+    push 0x10b0 ; _start in kernel.cpp (lower 16bit)
 
-    jmp gdt_kcs - gdt:KERNEL_INIT
+    jmp gdt_kcs - gdt:0x1030

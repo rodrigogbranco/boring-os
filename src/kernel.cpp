@@ -4,11 +4,7 @@
 extern "C" void _start() {
   install_gdt();
 
-  const char *kernelMsg = "Hello Protected Mode!";
-
-  clear_screen(RED, YELLOW);
-
-  printk((char *)kernelMsg, RED, YELLOW);
+  printk((char*)" Hello Protected Mode! ", RED, YELLOW);
 
   while (true) {
     /* BUSY LOOP*/
