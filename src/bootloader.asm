@@ -158,9 +158,6 @@ a20_success:
     mov gs, ax
     mov ss, ax
     mov esp, (STACK_SEG_BOOTLOADER << 4) + STACK_POINTER_BOOTLOADER
-    mov ebp, esp    
-
-    ; push 0x0000 ; _start in kernel.cpp (upper 16bit)
-    ; push 0x1060 ; _start in kernel.cpp (lower 16bit)
+    mov ebp, esp
 
     jmp gdt_kcs - gdt:KERNEL_INIT
