@@ -1,4 +1,7 @@
 #include "include/screen.h"
+#include "include/gdt.h"
+
+GDT test(0, 0, 0, 0);
 
 char *current_position = (char *)SCREEN_POINTER;
 
