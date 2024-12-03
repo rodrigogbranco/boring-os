@@ -68,6 +68,7 @@ public:
     this->limit_flags_byte_6 = (limit >> 16) & 0xf;
     this->limit_flags_byte_6 |= flags;
     this->base_address_byte_7 = (base_address >> 24) & 0xff;
+    printk((char *)" GDT() ", YELLOW, BLUE);
   }
   __attribute__((constructor));
 } __attribute__((__packed__));
@@ -76,12 +77,12 @@ class GDTPointer {
 public:
   uint16_t size = 0;
   uint32_t gdt_entries_address = 0;
-  ~GDTPointer() { printk((char *)" Destructor GDTPointer ", RED, YELLOW); }
+  ~GDTPointer() { printk((char *)" ~GDTPointer() ", RED, YELLOW); }
 
   GDTPointer(uint16_t size, uint32_t address) {
     this->size = size;
     this->gdt_entries_address = address;
-    printk((char *)" Constructor GDTPointer ", RED, YELLOW);
+    printk((char *)" GDTPointer() ", RED, YELLOW);
   }
   __attribute__((constructor));
 } __attribute__((__packed__));
