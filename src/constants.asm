@@ -44,8 +44,3 @@
 %define GDT_KDS_ACCESS_BYTE_5 10010010b ; 0 (not used now) - (1) writable - (0) expand down - (0) data segment - (1) not system segment - (00) DPL/ring 0 - (1) present
 %define GDT_KDS_MIDDLE_LIMIT_FLAGS_BYTE_6 GDT_KCS_MIDDLE_LIMIT_FLAGS_BYTE_6
 %define GDT_KDS_BASE_BYTE_7 GDT_KCS_BASE_BYTE_7
-
-%define NULL_CHARACTER 0
-
-%define LINE_FEED 10
-%define CARRIER_RETURN 13

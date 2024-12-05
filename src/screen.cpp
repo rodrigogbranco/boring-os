@@ -1,37 +1,55 @@
 #include "include/screen.h"
-#include "include/gdt.h"
 
-GDT test(0, 0, 0, 0);
+static Screen::Char *video_memory = (Screen::Char *)SCREEN_ADDR;
+static int current_position = 0;
 
-char *current_position = (char *)SCREEN_POINTER;
-
-inline char get_char_attr(CharColors foreground, CharColors background) {
+static inline char get_char_attr(Screen::Colors foreground,
+                                 Screen::Colors background) {
   return (foreground & 0x0f) | (background << 4);
 }
 
-inline void reset_current_position() {
-  current_position = (char *)SCREEN_POINTER;
+char current_color = get_char_attr(Screen::GRAY, Screen::BLACK);
+
+void Screen::set_colors(Screen::Colors foreground, Screen::Colors background) {
+  current_color = get_char_attr(foreground, background);
 }
 
-void printk(char *msg, CharColors foreground, CharColors background) {
-  char *currentMsg = msg;
-  do {
-    if (*currentMsg == NULL) {
-      break;
-    }
+static inline void reset_current_position() { current_position = 0; }
 
-    *current_position++ = *currentMsg++;
-    *current_position++ = get_char_attr(foreground, background);
-  } while (*currentMsg != NULL);
+void Screen::printk(const char *msg) {
+  for (const char *c = msg; *c != NULL; c++) {
+    video_memory[current_position].character = *c;
+    video_memory[current_position].attribute = current_color;
+    current_position = (current_position + 1) % (NUM_ROWS * NUM_COLUMNS);
+  }
 }
 
-void clear_screen(CharColors foreground, CharColors background) {
+void Screen::printk(char *msg) { Screen::printk((const char *)msg); }
+
+void Screen::print_char(char c) {
+  video_memory[current_position].character = c;
+  video_memory[current_position].attribute = current_color;
+  current_position = (current_position + 1) % (NUM_ROWS * NUM_COLUMNS);
+}
+
+void Screen::clear_screen() {
   reset_current_position();
   for (int i = 0; i < NUM_ROWS; i++) {
     for (int j = 0; j < NUM_COLUMNS; j++) {
-      *current_position++ = ' ';
-      *current_position++ = get_char_attr(foreground, background);
+      video_memory[current_position].character = ' ';
+      video_memory[current_position].attribute = current_color;
+      current_position = (current_position + 1) % (NUM_ROWS * NUM_COLUMNS);
     }
   }
   reset_current_position();
+}
+
+void Screen::set_pos(int x, int y) {
+  current_position = (((x * NUM_COLUMNS) + y) % (NUM_ROWS * NUM_COLUMNS));
+}
+
+void Screen::line_feed() {
+  current_position += NUM_COLUMNS;
+  current_position -= current_position % NUM_COLUMNS;
+  current_position = current_position % (NUM_ROWS * NUM_COLUMNS);
 }

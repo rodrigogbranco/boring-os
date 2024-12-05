@@ -1,7 +1,7 @@
 SRCDIR=src
 OUTPUTDIR=build
 
-OBJS:=screen.o gdt.o
+OBJS:=screen.o gdt.o util.o
 
 CRTI_OBJ=crti.o
 CRTBEGIN_OBJ:=$(shell g++ -m32 $(CFLAGS) -print-file-name=crtbegin.o)

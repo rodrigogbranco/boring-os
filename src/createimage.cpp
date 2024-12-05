@@ -68,9 +68,8 @@ std::vector<Elf32_Phdr> read_exec_file(std::ifstream &exec_file) {
     Elf32_Phdr ph;
     exec_file.read(reinterpret_cast<char *>(&ph), sizeof(Elf32_Phdr));
 
-    if (ph.p_offset > 0) {
-      /*offset 0 has ELF Header and Program Headers, it is not a Executable
-       Code*/
+    if (ph.p_type == PT_LOAD) {
+      /* Only LOAD Type is a valid executable code*/
       program_headers.insert(program_headers.end(), ph);
     }
   }
