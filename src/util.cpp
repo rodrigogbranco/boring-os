@@ -39,6 +39,7 @@ char *Util::itoa(int number, int radix, char *tmpBuff) {
 void Util::printk(const char *fmt, ...) {
   std::va_list args;
   int n = 0;
+  char tmp = 0;
   char tmpBuff[100];
   va_start(args, fmt);
   for (const char *c = fmt; *c != NULL; ++c) {
@@ -67,6 +68,10 @@ void Util::printk(const char *fmt, ...) {
         for (const char *s = Util::itoa(n, 8, tmpBuff); *s != NULL; ++s) {
           Screen::print_char(*s);
         }
+        break;
+      case 'c':
+        tmp = va_arg(args, int);
+        Screen::print_char(tmp);
         break;
       case '%':
         Screen::print_char('%');

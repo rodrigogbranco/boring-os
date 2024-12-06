@@ -14,7 +14,7 @@ extern "C" void _start() {
   Screen::set_colors(Screen::RED, Screen::YELLOW);
   Screen::clear_screen();
   Util::printk("Hello %s %d!\n", "Rodrigo", -42);
-  Util::printk("\tTesting line feed! %x %o\n%s", 0xb8000, 0700, test);
+  Util::printk("\tTesting line feed! %c %x %o\n%s", 'X', 0xb8000, 0700, test);
 
   while (true) {
     /* BUSY LOOP*/
