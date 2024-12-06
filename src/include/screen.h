@@ -36,8 +36,6 @@ public:
 void set_colors(Colors, Colors);
 void clear_screen();
 void set_pos(int, int);
-void printk(char *);
-void printk(const char *);
 void print_char(char);
 void line_feed();
 } // namespace Screen

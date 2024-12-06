@@ -16,16 +16,6 @@ void Screen::set_colors(Screen::Colors foreground, Screen::Colors background) {
 
 static inline void reset_current_position() { current_position = 0; }
 
-void Screen::printk(const char *msg) {
-  for (const char *c = msg; *c != NULL; c++) {
-    video_memory[current_position].character = *c;
-    video_memory[current_position].attribute = current_color;
-    current_position = (current_position + 1) % (NUM_ROWS * NUM_COLUMNS);
-  }
-}
-
-void Screen::printk(char *msg) { Screen::printk((const char *)msg); }
-
 void Screen::print_char(char c) {
   video_memory[current_position].character = c;
   video_memory[current_position].attribute = current_color;
