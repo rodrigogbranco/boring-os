@@ -17,17 +17,17 @@ static GDT::GDT entries[] = {
                  TYPE_DESCRIPTOR_CODE_OR_DATA | RING_00 | TYPE_PRESENT,
              FLAG_USER_DEFINED | FLAG_LONG_MODE_DISABLED | FLAG_32BIT |
                  FLAG_GRANULARITY)};
-static GDT::GDTPointer gdtp((uint16_t)(sizeof(GDT::GDT) * ENTRIES),
-                            (uint32_t)&entries[0]);
+static GDT::GDTPointer gdtp((uint16_t)(sizeof(entries)), (uint32_t)&entries[0]);
 
 void GDT::install_gdt() {
   asm("lgdt %0" : : "m"(gdtp));
   asm("ljmp %0, $continue_load_register \n\t"
-      "continue_load_register: \n\t" ::"i"(KCS_SEL));
+      "continue_load_register: \n\t" ::"i"((&entries[1] - &entries[0]) *
+                                           sizeof(GDT)));
   asm("mov %0, %%eax \n\t"
       "mov %%ax, %%ds \n\t"
       "mov %%ax, %%es \n\t"
       "mov %%ax, %%fs \n\t"
       "mov %%ax, %%gs \n\t"
-      "mov %%ax, %%ss \n\t" ::"i"(KDS_SEL));
+      "mov %%ax, %%ss \n\t" ::"i"((&entries[2] - &entries[0]) * sizeof(GDT)));
 }

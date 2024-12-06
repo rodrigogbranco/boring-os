@@ -4,11 +4,6 @@
 
 #include <cstdint>
 
-#define ENTRIES 3
-#define NULL_SEL 0
-#define KCS_SEL 0x8
-#define KDS_SEL 0x10
-
 // GDT BIT 40
 #define ACCESS_CODE_SEG_READ 0
 #define ACCESS_DATA_SEG_WRITE 0
