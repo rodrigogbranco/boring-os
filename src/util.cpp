@@ -32,6 +32,10 @@ char *Util::itoa(int number, int radix, char *tmpBuff) {
   while (--j >= 0) {
     tmpBuff[i++] = tmp[j];
   }
+  if (radix == 2) {
+    tmpBuff[i++] = 'b';
+  }
+
   tmpBuff[i++] = '\0';
   return tmpBuff;
 }
@@ -60,6 +64,12 @@ void Util::printk(const char *fmt, ...) {
       case 'x':
         n = va_arg(args, int);
         for (const char *s = Util::itoa(n, 16, tmpBuff); *s != NULL; ++s) {
+          Screen::print_char(*s);
+        }
+        break;
+      case 'b':
+        n = va_arg(args, int);
+        for (const char *s = Util::itoa(n, 2, tmpBuff); *s != NULL; ++s) {
           Screen::print_char(*s);
         }
         break;
