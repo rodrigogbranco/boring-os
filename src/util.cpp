@@ -3,9 +3,7 @@
 #include "include/screen.h"
 #include <cstdarg>
 
-static char tmpBuff[100];
-
-char *Util::itoa(int number, int radix) {
+char *Util::itoa(int number, int radix, char *tmpBuff) {
   int i = 0;
   int j = 0;
   char tmp[100];
@@ -41,6 +39,7 @@ char *Util::itoa(int number, int radix) {
 void Util::printk(const char *fmt, ...) {
   std::va_list args;
   int n = 0;
+  char tmpBuff[100];
   va_start(args, fmt);
   for (const char *c = fmt; *c != NULL; ++c) {
     switch (*c) {
@@ -53,19 +52,19 @@ void Util::printk(const char *fmt, ...) {
         break;
       case 'd':
         n = va_arg(args, int);
-        for (const char *s = Util::itoa(n, 10); *s != NULL; ++s) {
+        for (const char *s = Util::itoa(n, 10, tmpBuff); *s != NULL; ++s) {
           Screen::print_char(*s);
         }
         break;
       case 'x':
         n = va_arg(args, int);
-        for (const char *s = Util::itoa(n, 16); *s != NULL; ++s) {
+        for (const char *s = Util::itoa(n, 16, tmpBuff); *s != NULL; ++s) {
           Screen::print_char(*s);
         }
         break;
       case 'o':
         n = va_arg(args, int);
-        for (const char *s = Util::itoa(n, 8); *s != NULL; ++s) {
+        for (const char *s = Util::itoa(n, 8, tmpBuff); *s != NULL; ++s) {
           Screen::print_char(*s);
         }
         break;

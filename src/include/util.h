@@ -3,7 +3,7 @@
 
 namespace Util {
 
-char *itoa(int, int);
+char *itoa(int, int, char *);
 void printk(const char *, ...);
 
 } // namespace Util
