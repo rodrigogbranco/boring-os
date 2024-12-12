@@ -1,4 +1,5 @@
 #include "include/gdt.h"
+#include "include/queue.h"
 #include "include/screen.h"
 #include "include/util.h"
 
@@ -16,6 +17,8 @@ extern "C" void _start() {
   Util::printk("Hello %s %d!\n", "Rodrigo", -42);
   Util::printk("\tTesting line feed! %c %x %o\n%s\n", 'X', 0xb8000, 0700, test);
   Util::printk("%d in binary is %b\n", 75, 75);
+
+  Datastructure::test_queue();
 
   while (true) {
     /* BUSY LOOP*/
