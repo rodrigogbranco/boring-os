@@ -1,4 +1,5 @@
 #include "include/queue.h"
+#include "include/kernel.h"
 #include "include/util.h"
 
 using namespace Datastructure;
@@ -9,17 +10,22 @@ template <class T> void QueueNode<T>::insert(QueueNode<T> *node) {
 
   this->previous = node;
   node->next = this;
+  // Util::printk("added %x\n", node);
 }
 
 template <class T> QueueNode<T> *QueueNode<T>::remove(QueueNode<T> *node) {
+  if (this == node && this->next == this) {
+    // Util::printk("\n\n\n\n\nremoved %x - EMPTY QUEUE!\n", node);
+    return nullptr;
+  }
+
+  QueueNode<T> *tmp = this->next;
   node->previous->next = node->next;
   node->next->previous = node->previous;
 
-  if (this == node) {
-    return this->next;
-  }
+  // Util::printk("\n\n\n\n\nremoved %x\n", node);
 
-  return this;
+  return this == node ? tmp : this;
 }
 
 template <class T> void QueueNode<T>::print() {
@@ -29,27 +35,4 @@ template <class T> void QueueNode<T>::print() {
     tmp = tmp->next;
   } while (tmp != this);
   Util::printk("\n");
-}
-
-void Datastructure::test_queue() {
-  QueueNode<int> array[] = {
-      QueueNode<int>(0), QueueNode<int>(1), QueueNode<int>(2),
-      QueueNode<int>(3), QueueNode<int>(4),
-  };
-  QueueNode<int> *head = &array[0];
-  head->insert(&array[1]);
-  head->insert(&array[2]);
-  head->insert(&array[3]);
-  head->insert(&array[4]);
-  head->print();
-  head = head->remove(&array[1]);
-  head = head->remove(&array[3]);
-  head->print();
-  head->insert(&array[3]);
-  head->insert(&array[1]);
-  head->print();
-  head = head->remove(&array[0]);
-  head->print();
-  head->insert(&array[0]);
-  head->print();
 }

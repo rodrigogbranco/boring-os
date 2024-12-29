@@ -6,18 +6,15 @@ template <class T> class QueueNode {
 public:
   T data;
   QueueNode<T> *next, *previous;
-  QueueNode<T>(T data) {
-    this->data = data;
-    this->next = this;
-    this->previous = this;
-  }
+  constexpr QueueNode<T>() : next(this), previous(this){};
+  constexpr explicit QueueNode<T>(T data)
+      : data(data), next(this), previous(this){};
 
   void insert(QueueNode<T> *);
   QueueNode<T> *remove(QueueNode<T> *);
   void print();
+  constexpr T &get() { return data; }
 };
-
-void test_queue();
 } // namespace Datastructure
 
 #endif

@@ -1,6 +1,6 @@
 #include "include/util.h"
-
 #include "include/screen.h"
+
 #include <cstdarg>
 
 char *Util::itoa(int number, int radix, char *tmpBuff) {
@@ -46,36 +46,36 @@ void Util::printk(const char *fmt, ...) {
   char tmp = 0;
   char tmpBuff[100];
   va_start(args, fmt);
-  for (const char *c = fmt; *c != NULL; ++c) {
+  for (const char *c = fmt; *c != '\0'; ++c) {
     switch (*c) {
     case '%':
       switch (*++c) {
       case 's':
-        for (const char *s = va_arg(args, const char *); *s != NULL; ++s) {
+        for (const char *s = va_arg(args, const char *); *s != '\0'; ++s) {
           Screen::print_char(*s);
         }
         break;
       case 'd':
         n = va_arg(args, int);
-        for (const char *s = Util::itoa(n, 10, tmpBuff); *s != NULL; ++s) {
+        for (const char *s = Util::itoa(n, 10, tmpBuff); *s != '\0'; ++s) {
           Screen::print_char(*s);
         }
         break;
       case 'x':
         n = va_arg(args, int);
-        for (const char *s = Util::itoa(n, 16, tmpBuff); *s != NULL; ++s) {
+        for (const char *s = Util::itoa(n, 16, tmpBuff); *s != '\0'; ++s) {
           Screen::print_char(*s);
         }
         break;
       case 'b':
         n = va_arg(args, int);
-        for (const char *s = Util::itoa(n, 2, tmpBuff); *s != NULL; ++s) {
+        for (const char *s = Util::itoa(n, 2, tmpBuff); *s != '\0'; ++s) {
           Screen::print_char(*s);
         }
         break;
       case 'o':
         n = va_arg(args, int);
-        for (const char *s = Util::itoa(n, 8, tmpBuff); *s != NULL; ++s) {
+        for (const char *s = Util::itoa(n, 8, tmpBuff); *s != '\0'; ++s) {
           Screen::print_char(*s);
         }
         break;
@@ -102,4 +102,13 @@ void Util::printk(const char *fmt, ...) {
     }
   }
   va_end(args);
+}
+
+void Util::panic(const char *fmt) {
+  Screen::set_colors(Screen::RED, Screen::WHITE);
+  // Screen::clear_screen();
+  Util::printk("PANIC: %s\n", fmt);
+  while (true) {
+    /* BUSY LOOP*/
+  }
 }

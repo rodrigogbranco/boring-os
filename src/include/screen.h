@@ -2,7 +2,6 @@
 
 #define __SCREEN_H
 
-#define NULL 0
 #define SCREEN_ADDR 0xb8000
 #define NUM_ROWS 25
 #define NUM_COLUMNS 80
@@ -27,8 +26,7 @@ enum Colors {
   WHITE
 };
 
-class Char {
-public:
+struct Char {
   char character;
   char attribute;
 };
@@ -38,6 +36,7 @@ void clear_screen();
 void set_pos(int, int);
 void print_char(char);
 void line_feed();
+void carriage_return();
 } // namespace Screen
 
 #endif

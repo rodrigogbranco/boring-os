@@ -55,15 +55,13 @@ public:
   uint8_t limit_flags_byte_6 = 0;
   uint8_t base_address_byte_7 = 0;
 
-  GDT(uint32_t base_address, uint32_t limit, uint8_t type, uint8_t flags) {
-    this->limit_bytes_0_1 = limit & 0xffff;
-    this->base_address_bytes_2_3 = base_address & 0xffff;
-    this->base_address_byte_4 = (base_address >> 16) & 0xff;
-    this->type_access_byte_5 = type;
-    this->limit_flags_byte_6 = (limit >> 16) & 0xf;
-    this->limit_flags_byte_6 |= flags;
-    this->base_address_byte_7 = (base_address >> 24) & 0xff;
-  };
+  GDT(uint32_t base_address, uint32_t limit, uint8_t type, uint8_t flags)
+      : limit_bytes_0_1(limit & 0xffff),
+        base_address_bytes_2_3(base_address & 0xffff),
+        base_address_byte_4((base_address >> 16) & 0xff),
+        type_access_byte_5(type),
+        limit_flags_byte_6(((limit >> 16) & 0xf) | flags),
+        base_address_byte_7((base_address >> 24) & 0xff) {};
 } __attribute__((__packed__));
 
 class GDTPointer {
@@ -71,10 +69,8 @@ public:
   uint16_t size = 0;
   uint32_t entries_address = 0;
 
-  GDTPointer(uint16_t size, uint32_t address) {
-    this->size = size;
-    this->entries_address = address;
-  };
+  GDTPointer(uint16_t size, uint32_t address)
+      : size(size), entries_address(address) {}
 } __attribute__((__packed__));
 
 void install_gdt();
