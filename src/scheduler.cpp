@@ -4,14 +4,10 @@
 #include <cstdint>
 
 extern "C" void scheduler_entry(void);
-
-static Datastructure::QueueNode<PCB> pcbs[NUM_TASKS];
 Datastructure::QueueNode<PCB> dummyPCB;
 Datastructure::QueueNode<PCB> *current_task = &dummyPCB;
-static Datastructure::QueueNode<PCB> *ready_queue;
-static uint32_t current_pid = 0;
-static uint32_t scheduler_count = 0;
-static uint32_t current_stack_address = START_STACKS_ADDRESS;
+
+Scheduler sched;
 
 void PCB::config(void (*entry_point)(), uint32_t stack, uint32_t pid,
                  bool kernel_thread) {
@@ -23,14 +19,18 @@ void PCB::config(void (*entry_point)(), uint32_t stack, uint32_t pid,
   this->status = READY;
 }
 
-void do_yield() {
-  current_task->get().ready();
-  if (ready_queue != nullptr) {
-    ready_queue->insert(current_task);
+void Scheduler::resched(Datastructure::QueueNode<PCB> *task) {
+  if (this->ready_queue != nullptr) {
+    this->ready_queue->insert(task);
   } else {
-    ready_queue = current_task;
+    this->ready_queue = task;
     // Util::printk("ready queue %x\n", ready_queue);
   }
+}
+
+void do_yield() {
+  current_task->get().ready();
+  sched.resched(current_task);
   scheduler_entry();
 }
 void do_exit() {
@@ -38,19 +38,24 @@ void do_exit() {
   scheduler_entry();
 }
 
-extern "C" void scheduler() {
-  scheduler_count++;
-  if (ready_queue == nullptr) {
+Datastructure::QueueNode<PCB> *Scheduler::get_ready_task() {
+  if (this->ready_queue == nullptr) {
     Util::printk("!!!No more tasks to run!!!\n");
-    while (1) {
+    while (true) {
       /*NO TASKS TO RUN - BUSY WAIT*/
     }
   } else {
-    current_task = ready_queue;
-    ready_queue = ready_queue->remove(current_task);
+    Datastructure::QueueNode<PCB> *tmp = ready_queue;
+    this->ready_queue = ready_queue->remove(tmp);
     // Util::printk("ready queue %x\n", ready_queue);
-    current_task->get().run();
+    return tmp;
   }
+}
+
+extern "C" void scheduler() {
+  sched.inc_count();
+  current_task = sched.get_ready_task();
+  current_task->get().run();
 }
 
 /*void test_queue() {
@@ -77,10 +82,10 @@ extern "C" void scheduler() {
   head->print();
 }*/
 
-void add_task(void (*entry_point)(), bool kernel_thread) {
+void Scheduler::add_task(void (*entry_point)(), bool kernel_thread) {
   int i = 0;
   while (i < NUM_TASKS) {
-    if (pcbs[i].get().is_exited()) {
+    if (this->pcbs[i].get().is_exited()) {
       break;
     }
     i++;
@@ -90,13 +95,13 @@ void add_task(void (*entry_point)(), bool kernel_thread) {
     Util::panic("No more PCB available\n");
   }
 
-  pcbs[i].get().config(entry_point, current_stack_address, current_pid++,
-                       kernel_thread);
-  current_stack_address += STACK_SIZE;
+  this->pcbs[i].get().config(entry_point, this->current_stack_address,
+                             this->current_pid++, kernel_thread);
+  this->current_stack_address += STACK_SIZE;
 
-  if (ready_queue == nullptr) {
-    ready_queue = &pcbs[i];
+  if (this->ready_queue == nullptr) {
+    this->ready_queue = &this->pcbs[i];
   } else {
-    ready_queue->insert(&pcbs[i]);
+    this->ready_queue->insert(&this->pcbs[i]);
   }
 }

@@ -8,6 +8,8 @@
 extern "C" void _init(void);
 extern "C" void _fini(void);
 
+extern Scheduler sched;
+
 extern "C" void _start() {
   _init();
   GDT::install_gdt();
@@ -15,8 +17,8 @@ extern "C" void _start() {
   Screen::clear_screen();
   // test_queue();
 
-  add_task(&thread1, true);
-  add_task(&thread2, true);
+  sched.add_task(&thread1, true);
+  sched.add_task(&thread2, true);
 
   do_exit();
 

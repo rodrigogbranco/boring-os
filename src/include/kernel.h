@@ -53,7 +53,19 @@ public:
   };
 };
 
-void add_task(void (*)(), bool);
+class Scheduler {
+  Datastructure::QueueNode<PCB> pcbs[NUM_TASKS];
+  Datastructure::QueueNode<PCB> *ready_queue;
+  uint32_t current_pid{0};
+  uint32_t scheduler_count{0};
+  uint32_t current_stack_address{START_STACKS_ADDRESS};
+
+public:
+  void resched(Datastructure::QueueNode<PCB> *);
+  void inc_count() { this->scheduler_count++; };
+  Datastructure::QueueNode<PCB> *get_ready_task();
+  void add_task(void (*)(), bool);
+};
 
 void do_exit(void);
 void do_yield(void);
