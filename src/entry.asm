@@ -17,7 +17,3 @@ scheduler_entry:
     mov esp, [esp - (6*4)]
     pop ebp
     ret
-
-
-
-
