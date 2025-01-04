@@ -3,32 +3,54 @@
 #include "include/screen.h"
 #include "include/util.h"
 
+Lock lock;
+int order = 0;
+
 void thread1() {
   Screen::set_pos(0, 0);
-  Screen::set_colors(Screen::BLACK, Screen::WHITE);
-  Util::printk("Thread 1\n");
-  unsigned int i = 0;
-  while (i < 20000) {
-    Util::printk("                        ");
-    Screen::carriage_return();
-    Util::printk("%d", i++);
-    do_yield();
-  }
-  Util::printk("\nThread 1 exited!\n");
+  Util::printk("#1 started (%d).\n", order++);
+  lock.lock_acquire();
+  Util::printk("#1 acquired lock and yielded (%d).\n", order++);
+  do_yield();
+  Util::printk("#1 woke up (%d).\n", order++);
+  lock.lock_release();
+  Util::printk("#1 released lock and exited (%d).\n", order++);
   do_exit();
 }
 
 void thread2() {
-  Screen::set_pos(13, 0);
-  Screen::set_colors(Screen::WHITE, Screen::BLACK);
-  Util::printk("Thread 2\n");
-  unsigned int i = 0;
-  while (i < 10000) {
-    Util::printk("                        ");
-    Screen::carriage_return();
-    Util::printk("%d", i++);
+  int thread2_order = 0;
+  Screen::set_pos(5, 0);
+  Util::printk("#2 started (%d).\n", order++);
+  while (true) {
+    Util::printk("                      \n");
+    Util::printk("                      \n");
+    Screen::set_pos(6, 0);
+    Util::printk("#2 yielded (t2 %d).\n", thread2_order++);
     do_yield();
+    Util::printk("#2 woke up (t2 %d).\n", thread2_order++);
+    Screen::set_pos(6, 0);
   }
-  Util::printk("\nThread 2 exited!\n");
+}
+
+void thread3() {
+  Screen::set_pos(9, 0);
+  Util::printk("#3 started and yielded (%d).\n", order++);
+  do_yield();
+  Util::printk("#3 woke up (%d).\n", order++);
+  lock.lock_acquire();
+  Util::printk("#3 acquired lock (%d).\n", order++);
+  lock.lock_release();
+  Util::printk("#3 released lock and exited (%d).\n", order++);
+  do_exit();
+}
+
+void thread4() {
+  Screen::set_pos(14, 0);
+  Util::printk("#4 started (%d).\n", order++);
+  lock.lock_acquire();
+  Util::printk("#4 acquired lock (%d).\n", order++);
+  lock.lock_release();
+  Util::printk("#4 released lock and exited (%d).\n", order++);
   do_exit();
 }

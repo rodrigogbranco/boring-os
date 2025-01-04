@@ -19,6 +19,8 @@ extern "C" void _start() {
 
   sched.add_task(&thread1, true);
   sched.add_task(&thread2, true);
+  sched.add_task(&thread3, true);
+  sched.add_task(&thread4, true);
 
   do_exit();
 

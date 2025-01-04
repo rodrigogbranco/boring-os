@@ -4,13 +4,14 @@
 #include "queue.h"
 #include "screen.h"
 #include "util.h"
+#include <atomic>
 #include <cstdint>
 
-#define NUM_TASKS 2
+#define NUM_TASKS 4
 
 #define STACK_SIZE 0x1000
 #define START_STACKS_ADDRESS 0x41000
-enum TASK_STATUS { READY, RUNNING, EXITED };
+enum TASK_STATUS { READY, RUNNING, EXITED, BLOCKED };
 
 class PCB {
   uint32_t regs[9]; // EDI, ESI, EBP, original ESP, EBX, EDX, ECX, EAX, EFLAGS
@@ -26,6 +27,7 @@ public:
   void ready() { status = READY; };
   void run() { status = RUNNING; };
   void config(void (*)(), uint32_t, uint32_t, bool);
+  void block() { status = BLOCKED; };
   [[nodiscard]] constexpr int get_display_position() {
     return display_position;
   };
@@ -53,6 +55,8 @@ public:
   };
 };
 
+class Lock;
+
 class Scheduler {
   Datastructure::QueueNode<PCB> pcbs[NUM_TASKS];
   Datastructure::QueueNode<PCB> *ready_queue;
@@ -65,6 +69,31 @@ public:
   void inc_count() { this->scheduler_count++; };
   Datastructure::QueueNode<PCB> *get_ready_task();
   void add_task(void (*)(), bool);
+  void block(Lock *);
+  void unblock(Lock *);
+};
+
+// class PCB;
+
+class Lock {
+  std::atomic_bool mutex{false};
+  Datastructure::QueueNode<PCB> *blocked{nullptr};
+
+public:
+  void lock_acquire();
+  void lock_release();
+  void block(Datastructure::QueueNode<PCB> *task) {
+    if (blocked == nullptr) {
+      blocked = task;
+    } else {
+      blocked->insert(task);
+    }
+  }
+  Datastructure::QueueNode<PCB> *unblock() {
+    Datastructure::QueueNode<PCB> *tmp = blocked;
+    this->blocked = blocked->remove(tmp);
+    return tmp;
+  }
 };
 
 void do_exit(void);

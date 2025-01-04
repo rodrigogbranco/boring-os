@@ -1,7 +1,7 @@
 SRCDIR=src
 OUTPUTDIR=build
 
-OBJS:=screen.o gdt.o util.o tasks.o scheduler.o entry.o queue-impl-int.o queue-impl-pcb.o
+OBJS:=screen.o gdt.o util.o tasks.o scheduler.o entry.o queue-impl-int.o queue-impl-pcb.o lock.o
 
 CRTI_OBJ=crti.o
 CRTBEGIN_OBJ:=$(shell g++ -m32 $(CFLAGS) -print-file-name=crtbegin.o)

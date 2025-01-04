@@ -105,3 +105,14 @@ void Scheduler::add_task(void (*entry_point)(), bool kernel_thread) {
     this->ready_queue->insert(&this->pcbs[i]);
   }
 }
+
+void Scheduler::block(Lock *lock) {
+  current_task->get().block();
+  lock->block(current_task);
+  scheduler_entry();
+}
+
+void Scheduler::unblock(Lock *lock) {
+  Datastructure::QueueNode<PCB> *tmp = lock->unblock();
+  this->resched(tmp);
+}
