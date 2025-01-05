@@ -23,6 +23,9 @@ template <class T> QueueNode<T> *QueueNode<T>::remove(QueueNode<T> *node) {
   node->previous->next = node->next;
   node->next->previous = node->previous;
 
+  node->previous = node;
+  node->next = node;
+
   // Util::printk("\n\n\n\n\nremoved %x\n", node);
 
   return this == node ? tmp : this;

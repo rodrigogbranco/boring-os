@@ -28,6 +28,7 @@ public:
   void run() { status = RUNNING; };
   void config(void (*)(), uint32_t, uint32_t, bool);
   void block() { status = BLOCKED; };
+  uint32_t get_pid() { return pid; };
   [[nodiscard]] constexpr int get_display_position() {
     return display_position;
   };
@@ -83,6 +84,7 @@ public:
   void lock_acquire();
   void lock_release();
   void block(Datastructure::QueueNode<PCB> *task) {
+    // Util::printk("blocking: %x\n", task);
     if (blocked == nullptr) {
       blocked = task;
     } else {
@@ -91,6 +93,7 @@ public:
   }
   Datastructure::QueueNode<PCB> *unblock() {
     Datastructure::QueueNode<PCB> *tmp = blocked;
+    // Util::printk("unblocking: %x\n", tmp);
     this->blocked = blocked->remove(tmp);
     return tmp;
   }

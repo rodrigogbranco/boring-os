@@ -109,10 +109,13 @@ void Scheduler::add_task(void (*entry_point)(), bool kernel_thread) {
 void Scheduler::block(Lock *lock) {
   current_task->get().block();
   lock->block(current_task);
+  // Util::printk("Blocking task %d\n", current_task->get().get_pid() + 1);
   scheduler_entry();
 }
 
 void Scheduler::unblock(Lock *lock) {
   Datastructure::QueueNode<PCB> *tmp = lock->unblock();
+  tmp->get().ready();
+  // Util::printk("Unblocking task %d\n", tmp->get().get_pid() + 1);
   this->resched(tmp);
 }
