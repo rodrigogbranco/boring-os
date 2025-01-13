@@ -38,7 +38,7 @@ process2: $(UOBJ_LINK_LIST_BEG) process2.o $(UOBJ_LINK_LIST_END)
 	cd $(OUTPUTDIR) && ld -O2 -g -m elf_i386 -T../linker.ld -Ttext 0x20000 -z noexecstack -o $@ $(UOBJ_LINK_LIST_BEG) process2.o $(UOBJ_LINK_LIST_END)	
 
 createimage: $(SRCDIR)/createimage.cpp
-	g++ -o $(OUTPUTDIR)/$@ $<
+	g++ -Wall -o $(OUTPUTDIR)/$@ $<
 
 clean:
 	rm -rf $(OUTPUTDIR)/*

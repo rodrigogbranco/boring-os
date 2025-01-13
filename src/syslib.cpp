@@ -1,7 +1,4 @@
-#define SYSCALL_YIELD 0
-#define SYSCALL_EXIT 1
-
-#include "include/util.h"
+#include "include/syslib.h"
 
 void (**kernel_entry_point)(int) = (void (**)(int))0x00F00;
 

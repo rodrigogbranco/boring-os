@@ -16,7 +16,7 @@ void extract_segments(std::string exec_path, std::vector<Elf32_Phdr> ph,
   extended_string << "0x" << std::hex << std::setw(4) << std::setfill('0')
                   << ph[0].p_vaddr << ": " << exec_path << std::endl;
 
-  for (int i = 0; i < ph.size(); i++) {
+  for (unsigned int i = 0; i < ph.size(); i++) {
     if (i == 0 && exec_bytes.size() > SECTOR_SIZE &&
         exec_bytes.size() + KERNEL_START_ADDR - SECTOR_SIZE < ph[i].p_vaddr) {
       exec_bytes.insert(
@@ -68,7 +68,7 @@ std::vector<Elf32_Phdr> read_exec_file(std::ifstream &exec_file) {
   exec_file.read(reinterpret_cast<char *>(&ehdr), sizeof(Elf32_Ehdr));
   exec_file.seekg(ehdr.e_phoff, std::ios_base::beg);
   std::vector<Elf32_Phdr> program_headers;
-  for (int i = 0; i < ehdr.e_phnum; i++) {
+  for (unsigned int i = 0; i < ehdr.e_phnum; i++) {
     Elf32_Phdr ph;
     exec_file.read(reinterpret_cast<char *>(&ph), sizeof(Elf32_Phdr));
 
