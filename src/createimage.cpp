@@ -96,7 +96,6 @@ int main(int argc, char *argv[]) {
   bool extended = false;
   std::ostringstream output_string;
   std::vector<u_int8_t> bytearray;
-  int image_counter = 0;
   for (int c = 1; c < argc; c++) {
     std::string arg = std::string(argv[c]);
     if (arg.compare("--extended") == 0) {
