@@ -6,17 +6,25 @@
 #include <vector>
 
 #define SECTOR_SIZE 512
+#define KERNEL_START_ADDR 0x1000
 
-std::vector<u_int8_t> extract_segments(std::string exec_path,
-                                       std::vector<Elf32_Phdr> ph,
-                                       std::ifstream &exec_file,
-                                       std::ostringstream &extended_string) {
-  std::vector<u_int8_t> exec_bytes;
+void extract_segments(std::string exec_path, std::vector<Elf32_Phdr> ph,
+                      std::ifstream &exec_file,
+                      std::ostringstream &extended_string,
+                      std::vector<u_int8_t> &exec_bytes) {
 
   extended_string << "0x" << std::hex << std::setw(4) << std::setfill('0')
                   << ph[0].p_vaddr << ": " << exec_path << std::endl;
 
   for (int i = 0; i < ph.size(); i++) {
+    if (i == 0 && exec_bytes.size() > SECTOR_SIZE &&
+        exec_bytes.size() + KERNEL_START_ADDR - SECTOR_SIZE < ph[i].p_vaddr) {
+      exec_bytes.insert(
+          exec_bytes.end(),
+          ph[i].p_vaddr - (exec_bytes.size() + KERNEL_START_ADDR - SECTOR_SIZE),
+          uint8_t(0));
+    }
+
     extended_string << "\tsegment " << i << std::endl;
     extended_string << "\t\toffset 0x" << std::hex << std::setw(4)
                     << std::setfill('0') << ph[i].p_offset << "\t vaddr 0x"
@@ -44,19 +52,15 @@ std::vector<u_int8_t> extract_segments(std::string exec_path,
                         uint8_t(0));
       extended_string << "\t\tpadding up to 0x" << std::hex << std::setw(4)
                       << std::setfill('0') << ph[i + 1].p_vaddr << std::endl;
-    } else if (i == ph.size() - 1 && exec_bytes.size() % SECTOR_SIZE > 0) {
+    } else if (i == ph.size() - 1 &&
+               ph[i].p_vaddr + ph[i].p_memsz < SECTOR_SIZE) {
       extended_string << "\t\tpadding up to 0x" << std::hex << std::setw(4)
-                      << std::setfill('0')
-                      << ph[i].p_vaddr + ph[i].p_memsz +
-                             (SECTOR_SIZE - (exec_bytes.size() % SECTOR_SIZE))
-                      << std::endl;
+                      << std::setfill('0') << SECTOR_SIZE << std::endl;
       exec_bytes.insert(exec_bytes.end(),
-                        SECTOR_SIZE - (exec_bytes.size() % SECTOR_SIZE),
+                        SECTOR_SIZE - (ph[i].p_vaddr + ph[i].p_memsz),
                         uint8_t(0));
     }
   }
-
-  return exec_bytes;
 }
 
 std::vector<Elf32_Phdr> read_exec_file(std::ifstream &exec_file) {
@@ -76,95 +80,49 @@ std::vector<Elf32_Phdr> read_exec_file(std::ifstream &exec_file) {
   return program_headers;
 }
 
-std::vector<u_int8_t> write_bootblock(std::string boot_path,
-                                      std::vector<Elf32_Phdr> bh,
-                                      std::ifstream &exec_file,
-                                      std::ostringstream &extended_string) {
-  std::vector<u_int8_t> exec_bytes =
-      extract_segments(boot_path, bh, exec_file, extended_string);
-
-  /* boot signature */
-  exec_bytes[510] = 0x55;
-  exec_bytes[511] = 0xaa;
-
-  return exec_bytes;
-}
-
-std::vector<u_int8_t> write_kernel(std::string kernel_path,
-                                   std::vector<Elf32_Phdr> kh,
-                                   std::ifstream &exec_file,
-                                   std::ostringstream &extended_string) {
-  std::vector<u_int8_t> exec_bytes =
-      extract_segments(kernel_path, kh, exec_file, extended_string);
-
-  return exec_bytes;
-}
-
-uint32_t count_kernel_sectors(std::vector<u_int8_t> &exec_bytes,
-                              std::ostringstream &extended_string) {
-  uint32_t os_size = exec_bytes.size() % SECTOR_SIZE != 0
-                         ? uint32_t(exec_bytes.size() / SECTOR_SIZE) + 1
-                         : uint32_t(exec_bytes.size() / SECTOR_SIZE);
+uint32_t count_kernel_sectors(int size, std::ostringstream &extended_string) {
+  uint32_t os_size = size % SECTOR_SIZE != 0 ? uint32_t(size / SECTOR_SIZE) + 1
+                                             : uint32_t(size / SECTOR_SIZE);
   extended_string << "os_size: " << std::dec << os_size << " sectors"
                   << std::endl;
   return os_size;
-}
-
-void record_kernel_sectors(uint32_t os_size,
-                           std::vector<u_int8_t> &exec_bootloader_bytes) {
-  (*(uint32_t *)&exec_bootloader_bytes[2]) = os_size;
 }
 
 void extended_opt(std::ostringstream &extended_string) {
   std::cout << extended_string.str();
 }
 
-int main(int argc, char *argv[], char *envp[]) {
+int main(int argc, char *argv[]) {
   bool extended = false;
-  // std::string bootloader_path, kernel_path;
   std::ostringstream output_string;
-  std::vector<u_int8_t> bootloader_bytearray, kernel_bytearray;
+  std::vector<u_int8_t> bytearray;
+  int image_counter = 0;
   for (int c = 1; c < argc; c++) {
     std::string arg = std::string(argv[c]);
     if (arg.compare("--extended") == 0) {
       extended = true;
-    } else if (arg.find("bootloader") != std::string::npos) {
-      std::ifstream bootloader_if(arg, std::ios::binary);
-      if (bootloader_if.fail()) {
-        std::cerr << "Error: Can't open Bootloader ELF file: " << arg
-                  << std::endl;
+    } else {
+      std::ifstream exec_if(arg, std::ios::binary);
+      if (exec_if.fail()) {
+        std::cerr << "Error: Can't open ELF file: " << arg << std::endl;
         return 1;
       }
 
-      std::vector<Elf32_Phdr> bootloader_hs = read_exec_file(bootloader_if);
+      std::vector<Elf32_Phdr> exec_hs = read_exec_file(exec_if);
+      extract_segments(arg, exec_hs, exec_if, output_string, bytearray);
 
-      bootloader_bytearray =
-          write_bootblock(arg, bootloader_hs, bootloader_if, output_string);
-
-      bootloader_if.close();
-    } else if (arg.find("kernel") != std::string::npos) {
-      std::ifstream kernel_if(arg, std::ios::binary);
-      if (kernel_if.fail()) {
-        std::cerr << "Error: Can't open Kernel ELF file: " << arg << std::endl;
-        return 1;
-      }
-
-      std::vector<Elf32_Phdr> kernel_hs = read_exec_file(kernel_if);
-
-      kernel_bytearray = write_kernel(arg, kernel_hs, kernel_if, output_string);
-
-      kernel_if.close();
+      exec_if.close();
     }
   }
 
-  record_kernel_sectors(count_kernel_sectors(kernel_bytearray, output_string),
-                        bootloader_bytearray);
+  (*(uint32_t *)&bytearray[2]) =
+      count_kernel_sectors(bytearray.size() - SECTOR_SIZE, output_string);
 
-  std::ofstream kernelimage("./build/boringos.img");
-  kernelimage.write(reinterpret_cast<char *>(&bootloader_bytearray[0]),
-                    bootloader_bytearray.size());
-  kernelimage.write(reinterpret_cast<char *>(&kernel_bytearray[0]),
-                    kernel_bytearray.size());
+  bytearray[510] = 0x55;
+  bytearray[511] = 0xaa;
+
+  std::ofstream kernelimage("./boringos.img");
+  kernelimage.write(reinterpret_cast<char *>(&bytearray[0]), bytearray.size());
 
   if (extended) {
     extended_opt(output_string);

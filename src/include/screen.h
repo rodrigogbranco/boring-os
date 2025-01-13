@@ -6,8 +6,7 @@
 #define NUM_ROWS 25
 #define NUM_COLUMNS 80
 
-namespace Screen {
-enum Colors {
+enum DisplayCharColor {
   BLACK,
   BLUE,
   GREEN,
@@ -26,17 +25,16 @@ enum Colors {
   WHITE
 };
 
-struct Char {
+struct DisplayChar {
   char character;
   char attribute;
 };
 
-void set_colors(Colors, Colors);
+void set_display_colors(DisplayCharColor, DisplayCharColor);
 void clear_screen();
 void set_pos(int, int);
 void print_char(char);
 void line_feed();
 void carriage_return();
-} // namespace Screen
 
 #endif

@@ -4,23 +4,29 @@
 #include "include/screen.h"
 #include "include/tasks.h"
 #include "include/util.h"
+#include <cstdint>
 
-extern "C" void _init(void);
-extern "C" void _fini(void);
+#define USER_ENTRY_POINT 0x00F00
+#define PROCESS1 0x10000
+#define PROCESS2 0x20000
 
 extern Scheduler sched;
 
+extern "C" void kernel_entry(void);
+
 extern "C" void _start() {
   _init();
-  GDT::install_gdt();
+  install_gdt();
+  *(uint32_t *)(USER_ENTRY_POINT) = (uint32_t)&kernel_entry;
 
-  Screen::clear_screen();
-  // test_queue();
+  clear_screen();
 
   sched.add_task(&thread1, true);
   sched.add_task(&thread2, true);
   sched.add_task(&thread3, true);
   sched.add_task(&thread4, true);
+  sched.add_task((void (*)())PROCESS1, false);
+  sched.add_task((void (*)())PROCESS2, false);
 
   do_exit();
 

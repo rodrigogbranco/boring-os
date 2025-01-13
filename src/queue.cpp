@@ -2,8 +2,6 @@
 #include "include/kernel.h"
 #include "include/util.h"
 
-using namespace Datastructure;
-
 template <class T> void QueueNode<T>::insert(QueueNode<T> *node) {
   this->previous->next = node;
   node->previous = this->previous;
@@ -34,8 +32,8 @@ template <class T> QueueNode<T> *QueueNode<T>::remove(QueueNode<T> *node) {
 template <class T> void QueueNode<T>::print() {
   QueueNode<T> *tmp = this;
   do {
-    Util::printk("%d ", tmp->data);
+    printk("%d ", tmp->data);
     tmp = tmp->next;
   } while (tmp != this);
-  Util::printk("\n");
+  printk("\n");
 }

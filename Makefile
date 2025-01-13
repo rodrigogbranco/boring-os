@@ -1,17 +1,20 @@
 SRCDIR=src
 OUTPUTDIR=build
 
-OBJS:=screen.o gdt.o util.o tasks.o scheduler.o entry.o queue-impl-int.o queue-impl-pcb.o lock.o
+KOBJS:=screen.o gdt.o util.o tasks.o scheduler.o entry.o queue-impl-int.o queue-impl-pcb.o lock.o
+UOBJS:=syslib.o util.o screen.o
 
 CRTI_OBJ=crti.o
 CRTBEGIN_OBJ:=$(shell g++ -m32 $(CFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell g++ -m32 $(CFLAGS) -print-file-name=crtend.o)
 CRTN_OBJ=crtn.o
 
-OBJ_LINK_LIST:=$(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OBJS) $(CRTEND_OBJ) $(CRTN_OBJ)
+KOBJ_LINK_LIST:=$(CRTI_OBJ) $(CRTBEGIN_OBJ) $(KOBJS) $(CRTEND_OBJ) $(CRTN_OBJ)
+UOBJ_LINK_LIST_BEG:=crt0.o  $(CRTI_OBJ) $(CRTBEGIN_OBJ) 
+UOBJ_LINK_LIST_END:=$(UOBJS) $(CRTEND_OBJ) $(CRTN_OBJ)
 
-all: $(OUTPUTDIR) kernel bootloader createimage
-	./$(OUTPUTDIR)/createimage --extended ./$(OUTPUTDIR)/bootloader ./$(OUTPUTDIR)/kernel
+all: $(OUTPUTDIR) kernel bootloader createimage process1 process2
+	cd $(OUTPUTDIR) && ./createimage --extended ./bootloader ./kernel ./process1 ./process2
 
 $(OUTPUTDIR):
 	mkdir $@
@@ -25,8 +28,14 @@ $(OUTPUTDIR):
 bootloader: bootloader.o
 	ld -O2 -g -m elf_i386 -Ttext 0x0 -o $(OUTPUTDIR)/$@ $(OUTPUTDIR)/$<
 
-kernel:  kernel.o $(OBJ_LINK_LIST)
-	cd $(OUTPUTDIR) && ld -O2 -g -m elf_i386 -T../linker.ld -z noexecstack -o $@ kernel.o $(OBJ_LINK_LIST)
+kernel:  kernel.o $(KOBJ_LINK_LIST)
+	cd $(OUTPUTDIR) && ld -O2 -g -m elf_i386 -T../linker.ld -Ttext 0x1000 -z noexecstack -o $@ kernel.o $(KOBJ_LINK_LIST)
+
+process1: $(UOBJ_LINK_LIST_BEG) process1.o $(UOBJ_LINK_LIST_END)
+	cd $(OUTPUTDIR) && ld -O2 -g -m elf_i386 -T../linker.ld -Ttext 0x10000 -z noexecstack -o $@ $(UOBJ_LINK_LIST_BEG) process1.o $(UOBJ_LINK_LIST_END)
+
+process2: $(UOBJ_LINK_LIST_BEG) process2.o $(UOBJ_LINK_LIST_END)
+	cd $(OUTPUTDIR) && ld -O2 -g -m elf_i386 -T../linker.ld -Ttext 0x20000 -z noexecstack -o $@ $(UOBJ_LINK_LIST_BEG) process2.o $(UOBJ_LINK_LIST_END)	
 
 createimage: $(SRCDIR)/createimage.cpp
 	g++ -o $(OUTPUTDIR)/$@ $<

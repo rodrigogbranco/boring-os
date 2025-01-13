@@ -1,7 +1,6 @@
 #ifndef __QUEUE_H
 #define __QUEUE_H
 
-namespace Datastructure {
 template <class T> class QueueNode {
 public:
   T data;
@@ -15,6 +14,5 @@ public:
   void print();
   constexpr T &get() { return data; }
 };
-} // namespace Datastructure
 
 #endif

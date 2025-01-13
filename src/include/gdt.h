@@ -45,7 +45,6 @@
 // GDT BIT 55
 #define FLAG_GRANULARITY (1 << 7)
 
-namespace GDT {
 class GDT {
 public:
   uint16_t limit_bytes_0_1 = 0;
@@ -74,6 +73,5 @@ public:
 } __attribute__((__packed__));
 
 void install_gdt();
-} // namespace GDT
 
 #endif

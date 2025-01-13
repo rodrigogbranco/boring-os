@@ -1,9 +1,7 @@
 #include "queue.cpp"
 
-template void Datastructure::QueueNode<PCB>::print();
+template void QueueNode<PCB>::print();
 
-template void
-Datastructure::QueueNode<PCB>::insert(Datastructure::QueueNode<PCB> *);
+template void QueueNode<PCB>::insert(QueueNode<PCB> *);
 
-template Datastructure::QueueNode<PCB> *
-Datastructure::QueueNode<PCB>::remove(Datastructure::QueueNode<PCB> *);
+template QueueNode<PCB> *QueueNode<PCB>::remove(QueueNode<PCB> *);
