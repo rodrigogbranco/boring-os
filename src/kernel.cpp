@@ -10,7 +10,7 @@
 #define PROCESS1 0x10000
 #define PROCESS2 0x20000
 
-extern Scheduler sched;
+extern Scheduler *sched;
 
 extern "C" void kernel_entry(void);
 
@@ -21,12 +21,12 @@ extern "C" void _start() {
 
   clear_screen();
 
-  sched.add_task(&thread1, true);
-  sched.add_task(&thread2, true);
-  sched.add_task(&thread3, true);
-  sched.add_task(&thread4, true);
-  sched.add_task((void (*)())PROCESS1, false);
-  sched.add_task((void (*)())PROCESS2, false);
+  sched->add_task(&thread1, true);
+  sched->add_task(&thread2, true);
+  sched->add_task(&thread3, true);
+  sched->add_task(&thread4, true);
+  sched->add_task((void (*)())PROCESS1, false);
+  // sched->add_task((void (*)())PROCESS2, false);
 
   do_exit();
 

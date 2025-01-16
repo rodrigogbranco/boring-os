@@ -15,4 +15,9 @@ public:
   constexpr T &get() { return data; }
 };
 
+template <class T> void queue_insert(QueueNode<T> *&, QueueNode<T> *);
+template <class T>
+void queue_insert_ordered(QueueNode<T> *&, QueueNode<T> *, int (*)(T *, T *));
+template <class T> QueueNode<T> *queue_remove(QueueNode<T> *&, QueueNode<T> *);
+
 #endif

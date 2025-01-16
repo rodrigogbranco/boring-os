@@ -3,7 +3,7 @@
 
 #include <cstdarg>
 
-char *itoa(int number, int radix, char *tmpBuff) {
+template <class T> char *itoa(T number, int radix, char *tmpBuff) {
   int i = 0;
   int j = 0;
   char tmp[100];
@@ -42,7 +42,6 @@ char *itoa(int number, int radix, char *tmpBuff) {
 
 void printk(const char *fmt, ...) {
   std::va_list args;
-  int n = 0;
   char tmp = 0;
   char tmpBuff[100];
   va_start(args, fmt);
@@ -55,33 +54,40 @@ void printk(const char *fmt, ...) {
           print_char(*s);
         }
         break;
+      case 'l':
+        for (const char *s =
+                 itoa(va_arg(args, unsigned long long), 10, tmpBuff);
+             *s != '\0'; ++s) {
+          print_char(*s);
+        }
+        break;
       case 'u':
-        n = va_arg(args, unsigned int);
-        for (const char *s = itoa(n, 10, tmpBuff); *s != '\0'; ++s) {
+        for (const char *s = itoa(va_arg(args, unsigned int), 10, tmpBuff);
+             *s != '\0'; ++s) {
           print_char(*s);
         }
         break;
       case 'd':
-        n = va_arg(args, int);
-        for (const char *s = itoa(n, 10, tmpBuff); *s != '\0'; ++s) {
+        for (const char *s = itoa(va_arg(args, int), 10, tmpBuff); *s != '\0';
+             ++s) {
           print_char(*s);
         }
         break;
       case 'x':
-        n = va_arg(args, int);
-        for (const char *s = itoa(n, 16, tmpBuff); *s != '\0'; ++s) {
+        for (const char *s = itoa(va_arg(args, int), 16, tmpBuff); *s != '\0';
+             ++s) {
           print_char(*s);
         }
         break;
       case 'b':
-        n = va_arg(args, int);
-        for (const char *s = itoa(n, 2, tmpBuff); *s != '\0'; ++s) {
+        for (const char *s = itoa(va_arg(args, int), 2, tmpBuff); *s != '\0';
+             ++s) {
           print_char(*s);
         }
         break;
       case 'o':
-        n = va_arg(args, int);
-        for (const char *s = itoa(n, 8, tmpBuff); *s != '\0'; ++s) {
+        for (const char *s = itoa(va_arg(args, int), 8, tmpBuff); *s != '\0';
+             ++s) {
           print_char(*s);
         }
         break;

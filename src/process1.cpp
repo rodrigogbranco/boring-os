@@ -1,7 +1,7 @@
 #include "include/syslib.h"
 #include "include/util.h"
 
-class Test {
+/*class Test {
 
 public:
   int x;
@@ -20,5 +20,17 @@ int main() {
   printk("process1 is yielding\n");
   yield();
   printk("process1 woke up and is exiting...\n");
+  return 0;
+}*/
+
+int main() {
+  set_display_position(20, 0);
+  volatile int x = 0;
+  for (int i = 500; i > 0; i--) {
+    x += x * i;
+  }
+  printk("p1 500 x=%d\n", x);
+  yield();
+  printk("p1 exiting\n");
   return 0;
 }
