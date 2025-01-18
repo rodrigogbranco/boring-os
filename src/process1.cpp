@@ -25,11 +25,8 @@ int main() {
 
 int main() {
   set_display_position(20, 0);
-  volatile int x = 0;
-  for (int i = 500; i > 0; i--) {
-    x += x * i;
-  }
-  printk("p1 500 x=%d\n", x);
+  printk("p1 sleeping 0.5 second\n");
+  delay(500);
   yield();
   printk("p1 exiting\n");
   return 0;

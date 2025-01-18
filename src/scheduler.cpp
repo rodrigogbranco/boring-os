@@ -9,24 +9,27 @@ QueueNode<PCB> dummyPCB;
 QueueNode<PCB> *current_task = &dummyPCB;
 void (*syscall_operations[])() = {&do_yield, &do_exit};
 unsigned long long curr_time = 0;
-unsigned long long last_kernel_cpu_time = 0;
-unsigned long long total_kernel_cpu_time = 0;
 
 FairScheduler fairSched;
 Scheduler *sched = &fairSched;
 
 extern "C" void start_timer() {
-  unsigned long long tmp = get_timer();
-  unsigned long long diff = tmp - curr_time;
-  last_kernel_cpu_time = diff;
-  total_kernel_cpu_time += last_kernel_cpu_time;
-  curr_time = tmp;
+  curr_time = get_timer();
   // printk("start diff pid %d %l\n", current_task->get().get_pid(), diff);
 }
-extern "C" void stop_timer() {
+extern "C" void stop_kernel_timer() {
   unsigned long long tmp = get_timer();
   unsigned long long diff = tmp - curr_time;
-  current_task->get().add_cpu_time(tmp - curr_time);
+  // printk("diff %l\n", diff);
+  current_task->get().set_kernel_cpu_time(diff);
+  curr_time = tmp;
+  // printk("stop diff pid %d %l\n", current_task->get().get_pid(), diff);
+}
+
+extern "C" void stop_user_timer() {
+  unsigned long long tmp = get_timer();
+  unsigned long long diff = tmp - curr_time;
+  current_task->get().set_user_cpu_time(diff);
   curr_time = tmp;
   // printk("stop diff pid %d %l\n", current_task->get().get_pid(), diff);
 }
@@ -63,7 +66,7 @@ void Scheduler::sched(QueueNode<PCB> *task) {
 }
 
 void do_yield() {
-  stop_timer();
+  stop_kernel_timer();
   current_task->get().ready();
   sched->sched(current_task);
   start_timer();
@@ -87,9 +90,8 @@ QueueNode<PCB> *Scheduler::get_ready_task() {
 
 extern "C" void scheduler() {
   sched->inc_count();
-  printk("last cpu time pid: %d %l\n", current_task->get().get_pid(),
-         current_task->get().get_cpu_time());
   current_task = sched->get_ready_task();
+  current_task->get().clear_last_cpu_time();
   current_task->get().run();
 }
 
@@ -109,7 +111,7 @@ void Scheduler::add_task(void (*entry_point)(), bool kernel_thread) {
   this->pcbs[i].get().config(i, entry_point, this->current_pid++,
                              kernel_thread);
 
-  queue_insert(this->ready_queue, &this->pcbs[i]);
+  queue_insert(this->ready_queue, (QueueNode<PCB> *)&this->pcbs[i]);
 }
 
 void Scheduler::block(Lock *lock) {
@@ -141,4 +143,11 @@ static int comparePCB(PCB *a, PCB *b) {
 void FairScheduler::sched(QueueNode<PCB> *task) {
   // printk("Fair scheduler!\n");
   queue_insert_ordered(this->ready_queue, task, &comparePCB);
+
+  QueueNode<PCB> *tmp = this->ready_queue;
+  do {
+    printk("(%d %l) ", tmp->get().get_pid(), tmp->get().get_cpu_time());
+    tmp = tmp->next;
+  } while (tmp != this->ready_queue);
+  printk("\n");
 }

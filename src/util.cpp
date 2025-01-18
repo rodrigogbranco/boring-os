@@ -126,3 +126,10 @@ void panic(const char *fmt) {
 }
 
 void set_display_position(int x, int y) { set_pos(x, y); }
+
+void delay(int millis) {
+  unsigned long long deadline = get_timer() + (millis * 1000 * MHZ);
+  while (get_timer() < deadline) {
+    // printk("millis %d %l %l\n", millis, get_timer(), deadline);
+  }
+}

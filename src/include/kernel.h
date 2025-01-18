@@ -15,6 +15,7 @@
 enum TASK_STATUS { READY, RUNNING, EXITED, BLOCKED };
 
 class PCB {
+protected:
   uint32_t kregs[9]; // EDI, ESI, EBP, original ESP, EBX, EDX, ECX, EAX, EFLAGS
                      // (KERNEL MODE)
   uint32_t uregs[9]; // EDI, ESI, EBP, original ESP, EBX, EDX, ECX, EAX, EFLAGS
@@ -22,18 +23,38 @@ class PCB {
   uint32_t pid;
   TASK_STATUS status{EXITED};
   bool kernel_thread{false};
-  unsigned long long cpu_time{0};
+  unsigned long long kernel_cpu_time_last_sched{0};
+  unsigned long long user_cpu_time_last_sched{0};
+  unsigned long long total_kernel_cpu_time{0};
+  unsigned long long total_user_cpu_time{0};
 
 public:
   void exit() { this->status = EXITED; };
-  bool is_exited() { return status == EXITED; };
+  bool is_exited() { return this->status == EXITED; };
+  bool is_kernel_thread() { return this->kernel_thread; };
   void ready() { this->status = READY; };
   void run() { this->status = RUNNING; };
   void config(int, void (*)(), uint32_t, bool);
   void block() { this->status = BLOCKED; };
   uint32_t get_pid() { return pid; };
-  void add_cpu_time(unsigned long long time) { this->cpu_time += time; };
-  unsigned long long get_cpu_time() { return this->cpu_time; };
+  void set_kernel_cpu_time(unsigned long long time) {
+    this->kernel_cpu_time_last_sched += time;
+    this->total_kernel_cpu_time += time;
+  };
+  void set_user_cpu_time(unsigned long long time) {
+    this->user_cpu_time_last_sched += time;
+    this->total_user_cpu_time += time;
+  };
+
+  void clear_last_cpu_time() {
+    this->kernel_cpu_time_last_sched = 0;
+    this->user_cpu_time_last_sched = 0;
+  }
+
+  unsigned long long get_cpu_time() {
+    return this->kernel_thread ? this->kernel_cpu_time_last_sched
+                               : this->user_cpu_time_last_sched;
+  }
 } __attribute__((__packed__));
 
 class Lock;

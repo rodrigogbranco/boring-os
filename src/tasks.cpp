@@ -51,44 +51,32 @@ void thread4() {
 }*/
 
 void thread1() {
-  volatile int x = 0;
-  for (int i = 0; i < 10000; i++) {
-    x += i * 2;
-  }
-  printk("t1 10000 x=%d\n", x);
+  printk("t1 sleeping 10 second\n");
+  delay(10000);
   do_yield();
   printk("t1 exiting\n");
   do_exit();
 }
 
 void thread2() {
-  volatile int x = 0;
-  for (int i = 1000; i > 0; i--) {
-    x += x * i;
-  }
-  printk("t2 1000 x=%d\n", x);
+  printk("t2 sleeping 1 second\n");
+  delay(1000);
   do_yield();
   printk("t2 exiting\n");
   do_exit();
 }
 
 void thread3() {
-  volatile int x = 0;
-  for (int i = 0; i < 4000; i++) {
-    x += x * i;
-  }
-  printk("t3 4000 x=%d\n", x);
+  printk("t3 sleeping 4 second\n");
+  delay(4000);
   do_yield();
   printk("t3 exiting\n");
   do_exit();
 }
 
 void thread4() {
-  volatile int x = 0;
-  for (int i = 2000; i > 0; i--) {
-    x += x * i;
-  }
-  printk("t4 2000 x=%d\n", x);
+  printk("t4 sleeping 2 second\n");
+  delay(2000);
   do_yield();
   printk("t4 exiting\n");
   do_exit();
