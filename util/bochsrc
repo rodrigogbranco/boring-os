@@ -4,7 +4,7 @@ romimage: file=/usr/share/bochs/BIOS-bochs-legacy
 #needs package vgabios
 vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
 vga: extension=vbe
-floppya: 1_44=/home/rodrigo/projects/boring-os/build/boringos.img, status=inserted
+floppya: 1_44=./build/boringos.img, status=inserted
 boot: floppy
 log: /tmp/bochsout.txt
 mouse: enabled=0
