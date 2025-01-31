@@ -23,11 +23,11 @@ extern "C" void _start() {
   install_idt();
   *(uint32_t *)(USER_ENTRY_POINT) = (uint32_t)&kernel_entry;
 
-  asm("ud2 " : :);
-
-  /*volatile int a = 3;
+  volatile int a = 3;
   volatile int b = 0;
-  printk("%d\n", a / b);*/
+  printk("%d\n", a / b);
+
+  // asm("ud2 " : :);
 
   sched->add_task(&thread1, true);
   sched->add_task(&thread2, true);
