@@ -1,7 +1,7 @@
 SRCDIR=src
 OUTPUTDIR=build
 
-KOBJS:=screen.o gdt.o util.o tasks.o scheduler.o entry.o queue-impl-pcb.o lock.o
+KOBJS:=screen.o gdt.o util.o tasks.o scheduler.o entry.o queue-impl-pcb.o lock.o isr.o idt.o exceptions.o isr_handlers.o
 UOBJS:=syslib.o util.o screen.o
 
 CRTI_OBJ=crti.o

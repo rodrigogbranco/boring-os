@@ -1,7 +1,7 @@
 #ifndef __UTIL_H
 #define __UTIL_H
 
-#include <x86intrin.h>
+#include <x86gprintrin.h>
 
 #define MHZ 85
 
@@ -13,12 +13,7 @@ void printk(const char *, ...);
 void panic(const char *);
 void set_display_position(int, int);
 
-inline unsigned long long get_timer() {
-  /*unsigned long long x = __rdtsc();
-  unsigned long long y = __rdtsc();
-  printk("diff x y %l %l\n", x, y);*/
-  return __rdtsc();
-};
+inline unsigned long long get_timer() { return __rdtsc(); };
 
 void delay(int);
 

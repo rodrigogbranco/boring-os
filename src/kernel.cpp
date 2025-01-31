@@ -1,5 +1,6 @@
 #include "include/kernel.h"
 #include "include/gdt.h"
+#include "include/idt.h"
 #include "include/queue.h"
 #include "include/screen.h"
 #include "include/tasks.h"
@@ -16,10 +17,17 @@ extern "C" void kernel_entry(void);
 
 extern "C" void _start() {
   _init();
+  clear_screen();
+
   install_gdt();
+  install_idt();
   *(uint32_t *)(USER_ENTRY_POINT) = (uint32_t)&kernel_entry;
 
-  clear_screen();
+  asm("ud2 " : :);
+
+  /*volatile int a = 3;
+  volatile int b = 0;
+  printk("%d\n", a / b);*/
 
   sched->add_task(&thread1, true);
   sched->add_task(&thread2, true);

@@ -10,8 +10,11 @@ QueueNode<PCB> *current_task = &dummyPCB;
 void (*syscall_operations[])() = {&do_yield, &do_exit};
 unsigned long long curr_time = 0;
 
-FairScheduler fairSched;
-Scheduler *sched = &fairSched;
+// FairScheduler fairSched;
+// Scheduler *sched = &fairSched;
+
+Scheduler roundRobinSched;
+Scheduler *sched = &roundRobinSched;
 
 extern "C" void start_timer() {
   curr_time = get_timer();

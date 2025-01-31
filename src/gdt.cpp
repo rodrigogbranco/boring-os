@@ -17,7 +17,7 @@ static GDT entries[] = {
             TYPE_DESCRIPTOR_CODE_OR_DATA | RING_00 | TYPE_PRESENT,
         FLAG_USER_DEFINED | FLAG_LONG_MODE_DISABLED | FLAG_32BIT |
             FLAG_GRANULARITY)};
-static GDTPointer gdtp((uint16_t)(sizeof(entries)), (uint32_t)&entries[0]);
+static GDTPointer gdtp((uint16_t)(sizeof(entries) - 1), (uint32_t)&entries[0]);
 
 void install_gdt() {
   asm("lgdt %0" : : "m"(gdtp));
