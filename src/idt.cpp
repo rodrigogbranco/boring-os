@@ -11,12 +11,13 @@ extern "C" void default_isr(void);
 void install_idt() {
   unsigned int i = 0;
   while (i < isr_size) {
-    entries[i].install_idt_entry(isr[i]);
+    entries[i].install_idt_entry(isr[i],
+                                 i < 32 ? TRAP_GATE_32BIT : INT_GATE_32BIT);
     i++;
   }
 
   while (i < TOTAL_ISR) {
-    entries[i].install_idt_entry(&default_isr);
+    entries[i].install_idt_entry(&default_isr, INT_GATE_32BIT);
     i++;
   }
 

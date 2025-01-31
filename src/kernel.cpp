@@ -27,7 +27,7 @@ extern "C" void _start() {
   volatile int b = 0;
   printk("%d\n", a / b);
 
-  // asm("ud2 " : :);
+  /*asm("ud2 " : :);*/
 
   sched->add_task(&thread1, true);
   sched->add_task(&thread2, true);

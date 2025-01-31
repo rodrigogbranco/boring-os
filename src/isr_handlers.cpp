@@ -11,4 +11,4 @@ void (*isr_handlers[])(int) = {
     &default_isr_handler, &default_isr_handler, &default_isr_handler,
     &default_isr_handler, &default_isr_handler, &default_isr_handler,
     &default_isr_handler, &default_isr_handler, &default_isr_handler,
-    &default_isr_handler, &default_isr_handler, &default_isr_handler};
+    &default_isr_handler, &default_isr_handler};

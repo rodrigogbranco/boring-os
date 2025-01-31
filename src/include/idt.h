@@ -34,14 +34,14 @@ class IDT {
   uint16_t offset_bytes_0_1;
   uint16_t segment_selector_bytes_2_3{TYPE_CODE_SEG};
   uint8_t reserved_byte_4{0};
-  uint8_t type_dpl_present_byte_5{PRESENT_BIT | ((DPL_RING_0 & 0x3) << 5) |
-                                  INT_GATE_32BIT};
+  uint8_t type_dpl_present_byte_5{PRESENT_BIT | ((DPL_RING_0 & 0x3) << 5)};
   uint16_t offset_bytes_6_7;
 
 public:
-  void install_idt_entry(void (*isr_entrypoint)(void)) {
+  void install_idt_entry(void (*isr_entrypoint)(void), GATE_TYPE type) {
     this->offset_bytes_0_1 = (uint32_t)*isr_entrypoint & 0x0000ffff;
     this->offset_bytes_6_7 = (uint32_t)*isr_entrypoint >> 16;
+    this->type_dpl_present_byte_5 |= type;
     /*("%b %b %b %b %b\n", this->offset_bytes_6_7,
            this->type_dpl_present_byte_5, this->reserved_byte_4,
            this->segment_selector_bytes_2_3, this->offset_bytes_0_1);*/
