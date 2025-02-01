@@ -64,9 +64,9 @@ prepare_isr:
     mov ebp, esp
 
     mov ebx, [ebp+32] ; isr_nr on the stack
-    push dword [ebp+36] ; err_no to the handler
+    push dword [ebp+36] ; err_code to the handler
     call [isr_handlers + 4*ebx]
-    add esp, 4 ; remove err_no off the stack
+    add esp, 4 ; remove err_code off the stack
 
     popa
     add esp, 8 ; remove error code and isr_nr from stack
