@@ -23,7 +23,7 @@ $(OUTPUTDIR):
 	nasm -wall -O2 -f elf32 -F dwarf -g -o $(OUTPUTDIR)/$@ $<
 
 %.o: $(SRCDIR)/%.cpp
-	g++ -g -m32 -c $< -o $(OUTPUTDIR)/$@ -O2 -Wall -Wextra -ffreestanding -fno-rtti -nostdlib -fno-exceptions -fno-use-cxa-atexit 
+	g++ -g -m32 -c $< -o $(OUTPUTDIR)/$@ -O2 -Wall -Wextra -pedantic -Weffc++ -ffreestanding -fno-rtti -nostdlib -fno-exceptions -fno-use-cxa-atexit 
 
 bootloader: bootloader.o
 	ld -O2 -g -m elf_i386 -Ttext 0x0 -o $(OUTPUTDIR)/$@ $(OUTPUTDIR)/$<
@@ -38,7 +38,7 @@ process2: $(UOBJ_LINK_LIST_BEG) process2.o $(UOBJ_LINK_LIST_END)
 	cd $(OUTPUTDIR) && ld -O2 -g -m elf_i386 -T../linker.ld -Ttext 0x20000 -z noexecstack -o $@ $(UOBJ_LINK_LIST_BEG) process2.o $(UOBJ_LINK_LIST_END)	
 
 createimage: $(SRCDIR)/createimage.cpp
-	g++ -Wall -o $(OUTPUTDIR)/$@ $<
+	g++ -Wall -Wextra -pedantic -Weffc++ -o $(OUTPUTDIR)/$@ $<
 
 clean:
 	rm -rf $(OUTPUTDIR)/*

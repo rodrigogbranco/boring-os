@@ -47,12 +47,12 @@
 
 class GDT {
 public:
-  uint16_t limit_bytes_0_1 = 0;
-  uint16_t base_address_bytes_2_3 = 0;
-  uint8_t base_address_byte_4 = 0;
-  uint8_t type_access_byte_5 = 0;
-  uint8_t limit_flags_byte_6 = 0;
-  uint8_t base_address_byte_7 = 0;
+  uint16_t limit_bytes_0_1{0};
+  uint16_t base_address_bytes_2_3{0};
+  uint8_t base_address_byte_4{0};
+  uint8_t type_access_byte_5{0};
+  uint8_t limit_flags_byte_6{0};
+  uint8_t base_address_byte_7{0};
 
   GDT(uint32_t base_address, uint32_t limit, uint8_t type, uint8_t flags)
       : limit_bytes_0_1(limit & 0xffff),
@@ -65,8 +65,8 @@ public:
 
 class GDTPointer {
 public:
-  uint16_t size = 0;
-  uint32_t entries_address = 0;
+  uint16_t size{0};
+  uint32_t entries_address{0};
 
   GDTPointer(uint16_t size, uint32_t address)
       : size(size), entries_address(address) {}

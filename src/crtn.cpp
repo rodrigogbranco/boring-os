@@ -3,7 +3,10 @@
  */
 typedef void (*func_ptr)(void);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 func_ptr _init_array_end[0] __attribute__((used, section(".init_array"),
                                            aligned(sizeof(func_ptr)))) = {};
 func_ptr _fini_array_end[0] __attribute__((used, section(".fini_array"),
                                            aligned(sizeof(func_ptr)))) = {};
+#pragma GCC diagnostic pop

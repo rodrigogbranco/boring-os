@@ -31,11 +31,11 @@ enum GATE_TYPE {
 };
 
 class IDT {
-  uint16_t offset_bytes_0_1;
+  uint16_t offset_bytes_0_1{0};
   uint16_t segment_selector_bytes_2_3{TYPE_CODE_SEG};
   uint8_t reserved_byte_4{0};
   uint8_t type_dpl_present_byte_5{PRESENT_BIT | ((DPL_RING_0 & 0x3) << 5)};
-  uint16_t offset_bytes_6_7;
+  uint16_t offset_bytes_6_7{0};
 
 public:
   void install_idt_entry(void (*isr_entrypoint)(void), GATE_TYPE type) {

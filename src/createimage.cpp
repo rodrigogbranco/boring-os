@@ -36,7 +36,7 @@ void extract_segments(std::string exec_path, std::vector<Elf32_Phdr> ph,
                     << ph[i].p_memsz << std::endl;
 
     exec_file.seekg(ph[i].p_offset, std::ios_base::beg);
-    uint8_t buff[ph[i].p_filesz];
+    uint8_t *buff = new uint8_t[ph[i].p_filesz];
     exec_file.read(reinterpret_cast<char *>(buff), ph[i].p_filesz);
     exec_bytes.insert(exec_bytes.end(), buff, buff + ph[i].p_filesz);
 
@@ -60,6 +60,8 @@ void extract_segments(std::string exec_path, std::vector<Elf32_Phdr> ph,
                         SECTOR_SIZE - (ph[i].p_vaddr + ph[i].p_memsz),
                         uint8_t(0));
     }
+
+    delete[] buff;
   }
 }
 

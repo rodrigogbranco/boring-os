@@ -20,7 +20,7 @@ protected:
                      // (KERNEL MODE)
   uint32_t uregs[9]; // EDI, ESI, EBP, original ESP, EBX, EDX, ECX, EAX, EFLAGS
                      // (USER MODE)
-  uint32_t pid;
+  uint32_t pid{INT32_MAX};
   TASK_STATUS status{EXITED};
   bool kernel_thread{false};
   unsigned long long kernel_cpu_time_last_sched{0};
@@ -62,7 +62,7 @@ class Lock;
 class Scheduler {
 protected:
   QueueNode<PCB> pcbs[NUM_TASKS];
-  QueueNode<PCB> *ready_queue;
+  QueueNode<PCB> *ready_queue{nullptr};
   uint32_t current_pid{0};
   uint32_t scheduler_count{0};
 
@@ -73,11 +73,14 @@ public:
   void add_task(void (*)(), bool);
   void block(Lock *);
   void unblock(Lock *);
+  virtual ~Scheduler() = default;
+  void operator delete(void *, unsigned int) {};
 };
 
 class FairScheduler : public Scheduler {
 public:
   void sched(QueueNode<PCB> *);
+  //~FairScheduler() = default;
 };
 
 // class PCB;

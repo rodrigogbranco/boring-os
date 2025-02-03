@@ -14,6 +14,7 @@
 extern Scheduler *sched;
 
 extern "C" void kernel_entry(void);
+void (**user_entry_point)(void) = (void (**)(void))USER_ENTRY_POINT;
 
 extern "C" void _start() {
   _init();
@@ -21,7 +22,7 @@ extern "C" void _start() {
 
   install_gdt();
   install_idt();
-  *(uint32_t *)(USER_ENTRY_POINT) = (uint32_t)&kernel_entry;
+  *user_entry_point = &kernel_entry;
 
   volatile int a = 3;
   volatile int b = 0;
