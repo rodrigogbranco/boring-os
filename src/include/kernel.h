@@ -80,7 +80,6 @@ public:
 class FairScheduler : public Scheduler {
 public:
   void sched(QueueNode<PCB> *);
-  //~FairScheduler() = default;
 };
 
 // class PCB;
