@@ -1,7 +1,8 @@
 #include "include/syslib.h"
-#include "include/util.h"
 
 extern int main();
+extern "C" void _init(void);
+extern "C" void _fini(void);
 
 extern "C" void _start() {
   _init();

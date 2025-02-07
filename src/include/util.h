@@ -5,9 +5,6 @@
 
 #define MHZ 85
 
-extern "C" void _init(void);
-extern "C" void _fini(void);
-
 template <class T> char *itoa(T, int, char *);
 void printk(const char *, ...);
 void panic(const char *);

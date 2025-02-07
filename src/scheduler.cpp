@@ -1,7 +1,11 @@
+#include "include/common.h"
 #include "include/kernel.h"
 #include "include/queue.h"
 #include "include/util.h"
 #include <cstdint>
+
+#define EFLAGS_RESERVED 0x2
+#define EFLAGS_INTERRUPT_ENABLED 0x200
 
 extern "C" void scheduler_entry(void);
 extern "C" uint32_t returning_kernel_entry;
@@ -24,7 +28,9 @@ extern "C" void stop_kernel_timer() {
   unsigned long long tmp = get_timer();
   unsigned long long diff = tmp - curr_time;
   // printk("diff %l\n", diff);
+
   current_task->get().set_kernel_cpu_time(diff);
+
   curr_time = tmp;
   // printk("stop diff pid %d %l\n", current_task->get().get_pid(), diff);
 }
@@ -32,7 +38,9 @@ extern "C" void stop_kernel_timer() {
 extern "C" void stop_user_timer() {
   unsigned long long tmp = get_timer();
   unsigned long long diff = tmp - curr_time;
+
   current_task->get().set_user_cpu_time(diff);
+
   curr_time = tmp;
   // printk("stop diff pid %d %l\n", current_task->get().get_pid(), diff);
 }
@@ -61,6 +69,11 @@ void PCB::config(int pcb_index, void (*entry_point)(), uint32_t pid,
     this->uregs[2] = *(uint32_t *)(stack - 8) = stack;
     *(uint32_t *)(stack - 4) = (uint32_t)entry_point;
   }
+
+  // set eflags to current value (to allow interrupts, if set)
+  this->kregs[8] = EFLAGS_RESERVED | EFLAGS_INTERRUPT_ENABLED;
+  this->uregs[8] = EFLAGS_RESERVED | EFLAGS_INTERRUPT_ENABLED;
+
   this->status = READY;
 }
 
@@ -70,13 +83,17 @@ void Scheduler::sched(QueueNode<PCB> *task) {
 
 void do_yield() {
   stop_kernel_timer();
+
   current_task->get().ready();
   sched->sched(current_task);
+
   start_timer();
   scheduler_entry();
 }
 void do_exit() {
+
   current_task->get().exit();
+
   scheduler_entry();
 }
 
@@ -92,6 +109,7 @@ QueueNode<PCB> *Scheduler::get_ready_task() {
 }
 
 extern "C" void scheduler() {
+
   sched->inc_count();
   current_task = sched->get_ready_task();
   current_task->get().clear_last_cpu_time();
@@ -118,7 +136,9 @@ void Scheduler::add_task(void (*entry_point)(), bool kernel_thread) {
 }
 
 void Scheduler::block(Lock *lock) {
+
   current_task->get().block();
+
   lock->block(current_task);
   // printk("Blocking task %d\n", current_task->get().get_pid() + 1);
   scheduler_entry();

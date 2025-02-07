@@ -20,11 +20,12 @@ static GDT entries[] = {
 static GDTPointer gdtp((uint16_t)(sizeof(entries) - 1), (uint32_t)&entries[0]);
 
 void install_gdt() {
-  asm("lgdt %0" : : "m"(gdtp));
-  asm("ljmp %0, $continue_load_register \n\t"
-      "continue_load_register: \n\t" ::"i"((&entries[1] - &entries[0]) *
-                                           sizeof(GDT)));
-  asm("mov %0, %%eax \n\t"
+  asm volatile("lgdt %0" : : "m"(gdtp));
+  asm volatile("ljmp %0, $continue_load_register \n\t"
+               "continue_load_register: \n\t" ::"i"(
+                   (&entries[1] - &entries[0]) * sizeof(GDT)));
+  asm volatile(
+      "mov %0, %%eax \n\t"
       "mov %%ax, %%ds \n\t"
       "mov %%ax, %%es \n\t"
       "mov %%ax, %%fs \n\t"

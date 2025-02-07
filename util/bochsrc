@@ -7,7 +7,7 @@ vga: extension=vbe
 floppya: 1_44=./build/boringos.img, status=inserted
 boot: floppy
 log: /tmp/bochsout.txt
-mouse: enabled=0
+mouse: enabled=1
 cpu: count=1, ips=1000000, reset_on_triple_fault=1
 #vga_update_interval: 150000
 #i440fxsupport: enabled=1
@@ -15,3 +15,5 @@ cpu: count=1, ips=1000000, reset_on_triple_fault=1
 display_library: x
 log: /dev/null
 magic_break: enabled=1
+keyboard: type=mf, serial_delay=150, paste_delay=100000
+clock: sync=realtime

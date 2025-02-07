@@ -13,6 +13,8 @@ kernel_entry:
     push ebp
     mov ebp, esp
     call stop_user_timer
+
+    cli
     mov esp, [current_task]
     lea esp, [esp + U_REGS_LIMIT]
     pushfd
@@ -26,6 +28,7 @@ kernel_entry:
     popad
     popfd
     mov esp, [esp - ESP_OFFSET_FROM_LIMIT]
+    sti
 
     call start_timer
     mov ebx, [syscall_op]
@@ -34,6 +37,8 @@ kernel_entry:
 returning_kernel_entry:  
     call stop_kernel_timer
     mov [old_esp], esp
+    
+    cli
     mov esp, [current_task]
     lea esp, [esp + K_REGS_LIMIT]
     pushfd
@@ -46,6 +51,7 @@ returning_kernel_entry:
     popad
     popfd
     mov esp, [esp - ESP_OFFSET_FROM_LIMIT]
+    sti
 
     call start_timer
     pop ebp
@@ -56,17 +62,24 @@ scheduler_entry:
     push ebp
     mov ebp, esp
     call stop_kernel_timer
+
+    cli
     mov esp, [current_task]
     lea esp, [esp + K_REGS_LIMIT]
     pushfd
     pushad
     mov [esp + ESP_OFFSET], ebp
     mov esp, ebp
+    sti
+
     call scheduler
+
+    cli
     mov esp, [current_task]
     popad
     popfd
     mov esp, [esp - ESP_OFFSET_FROM_LIMIT]
+    sti
     call start_timer
     pop ebp
     ret

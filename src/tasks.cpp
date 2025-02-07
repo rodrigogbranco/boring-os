@@ -6,10 +6,7 @@
 Lock lock;
 int order = 0;
 
-extern unsigned long long time_to_do_yield;
-extern QueueNode<PCB> *current_task;
-
-/*void thread1() {
+void thread1() {
   printk("#1 started (%d) and is trying to acquire the lock\n", order++);
   lock.lock_acquire();
   printk("#1 acquired the lock and yielded (%d).\n", order++);
@@ -22,10 +19,10 @@ extern QueueNode<PCB> *current_task;
 
 void thread2() {
   while (true) {
-    carriage_return();
+    /*carriage_return();
     printk("                         ");
     carriage_return();
-    printk("%l", current_task->get().get_cpu_time());
+    printk("%l", current_task->get().get_cpu_time());*/
     do_yield();
   }
 }
@@ -48,9 +45,9 @@ void thread4() {
   lock.lock_release();
   printk("#4 released the lock and exited (%d).\n", order++);
   do_exit();
-}*/
+}
 
-void thread1() {
+/*void thread1() {
   printk("t1 sleeping 10 second\n");
   delay(10000);
   do_yield();
@@ -72,12 +69,32 @@ void thread3() {
   do_yield();
   printk("t3 exiting\n");
   do_exit();
-}
+}*/
 
-void thread4() {
-  printk("t4 sleeping 2 second\n");
-  delay(2000);
-  do_yield();
-  printk("t4 exiting\n");
-  do_exit();
+// void thread4() {
+/*printk("t4 sleeping 2 second\n");
+delay(2000);
+do_yield();
+printk("t4 exiting\n");
+do_exit();*/
+
+// printk("Thread4 ready!\n");
+// int i = 0;
+//  do_exit();
+// while (true) {
+/*printk("                  ");
+carriage_return();
+printk("T4 %d           ", i++);
+carriage_return();*/
+//  do_yield();
+//}
+//}
+
+void thread5() {
+  printk("Thread5 ready!\n");
+  while (true) {
+    printk("T5 ");
+    do_yield();
+    // asm("ud2 " : :);
+  }
 }
