@@ -67,7 +67,6 @@ protected:
   uint32_t scheduler_count{0};
 
 public:
-  virtual void sched(QueueNode<PCB> *);
   void inc_count() { this->scheduler_count++; };
   QueueNode<PCB> *get_ready_task();
   void add_task(void (*)(), bool);
@@ -75,6 +74,7 @@ public:
   void unblock(Lock *);
   virtual ~Scheduler() = default;
   void operator delete(void *, unsigned int) {};
+  virtual void sched(QueueNode<PCB> *);
 };
 
 class FairScheduler : public Scheduler {

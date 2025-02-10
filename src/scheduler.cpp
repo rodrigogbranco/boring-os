@@ -5,7 +5,8 @@
 #include <cstdint>
 
 #define EFLAGS_RESERVED 0x2
-#define EFLAGS_INTERRUPT_ENABLED 0x200
+#define EFLAGS_INTERRUPT_ENABLED (1 << 9)
+#define EFLAGS_INTERRUPT_NOT_ENABLED (0 << 9)
 
 extern "C" void scheduler_entry(void);
 extern "C" uint32_t returning_kernel_entry;
@@ -50,6 +51,7 @@ void PCB::config(int pcb_index, void (*entry_point)(), uint32_t pid,
   this->pid = pid;
   this->kernel_thread = kernel_thread;
   uint32_t stack = START_STACKS_ADDRESS + 2 * pcb_index * STACK_SIZE;
+
   if (stack > STACK_MAX) {
     panic("Stack overflow\n");
   }
@@ -71,14 +73,10 @@ void PCB::config(int pcb_index, void (*entry_point)(), uint32_t pid,
   }
 
   // set eflags to current value (to allow interrupts, if set)
-  this->kregs[8] = EFLAGS_RESERVED | EFLAGS_INTERRUPT_ENABLED;
-  this->uregs[8] = EFLAGS_RESERVED | EFLAGS_INTERRUPT_ENABLED;
+  this->kregs[8] = EFLAGS_RESERVED | EFLAGS_INTERRUPT_NOT_ENABLED;
+  this->uregs[8] = EFLAGS_RESERVED | EFLAGS_INTERRUPT_NOT_ENABLED;
 
   this->status = READY;
-}
-
-void Scheduler::sched(QueueNode<PCB> *task) {
-  queue_insert(this->ready_queue, task);
 }
 
 void do_yield() {
@@ -161,6 +159,10 @@ static int comparePCB(PCB *a, PCB *b) {
   } else {
     return 0;
   }
+}
+
+void Scheduler::sched(QueueNode<PCB> *task) {
+  queue_insert(this->ready_queue, task);
 }
 
 void FairScheduler::sched(QueueNode<PCB> *task) {

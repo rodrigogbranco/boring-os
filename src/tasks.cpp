@@ -18,13 +18,15 @@ void thread1() {
 }
 
 void thread2() {
-  while (true) {
+  int i = 0;
+  while (i++ < 50000) {
     /*carriage_return();
     printk("                         ");
     carriage_return();
     printk("%l", current_task->get().get_cpu_time());*/
     do_yield();
   }
+  do_exit();
 }
 
 void thread3() {
@@ -92,9 +94,10 @@ carriage_return();*/
 
 void thread5() {
   printk("Thread5 ready!\n");
-  while (true) {
-    printk("T5 ");
+  int i = 0;
+  while (i++ < 20000) {
     do_yield();
-    // asm("ud2 " : :);
+    asm("ud2 " : :);
   }
+  do_exit();
 }

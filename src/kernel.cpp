@@ -40,7 +40,7 @@ extern "C" void _start() {
   sched->add_task(&thread4, true);
   sched->add_task(&thread5, true);
   sched->add_task((void (*)())PROCESS1, false);
-  // sched->add_task((void (*)())PROCESS2, false);
+  sched->add_task((void (*)())PROCESS2, false);
 
   do_exit();
 

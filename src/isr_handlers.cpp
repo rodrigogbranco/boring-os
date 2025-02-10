@@ -7,7 +7,7 @@ void (*isr_handlers[])(int, int) = {
     &default_isr_handler, &default_isr_handler, &default_isr_handler,
     &invalid_opcode, &default_isr_handler, &default_isr_handler,
     &default_isr_handler, &default_isr_handler, &default_isr_handler,
-    &default_isr_handler, &default_isr_handler, &default_isr_handler,
+    &default_isr_handler, &general_protection_fault, &default_isr_handler,
     &default_isr_handler, &default_isr_handler, &default_isr_handler,
     &default_isr_handler, &default_isr_handler, &default_isr_handler,
     &default_isr_handler, &default_isr_handler, &default_isr_handler,

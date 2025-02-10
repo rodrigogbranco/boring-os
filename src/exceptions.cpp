@@ -18,3 +18,8 @@ void invalid_opcode(__attribute__((unused)) int isr_nr,
   printk("Invalid Opcode, killing\n");
   do_exit();
 }
+
+void general_protection_fault(__attribute__((unused)) int isr_nr,
+                              __attribute__((unused)) int err_code) {
+  panic("GPR");
+}

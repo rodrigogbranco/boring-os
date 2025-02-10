@@ -14,6 +14,7 @@ kernel_entry:
     mov ebp, esp
     call stop_user_timer
 
+
     cli
     mov esp, [current_task]
     lea esp, [esp + U_REGS_LIMIT]
@@ -36,9 +37,9 @@ kernel_entry:
 
 returning_kernel_entry:  
     call stop_kernel_timer
-    mov [old_esp], esp
-    
+
     cli
+    mov [old_esp], esp
     mov esp, [current_task]
     lea esp, [esp + K_REGS_LIMIT]
     pushfd
@@ -70,11 +71,7 @@ scheduler_entry:
     pushad
     mov [esp + ESP_OFFSET], ebp
     mov esp, ebp
-    sti
-
     call scheduler
-
-    cli
     mov esp, [current_task]
     popad
     popfd

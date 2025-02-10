@@ -14,4 +14,5 @@ void irq0_system_timer(__attribute__((unused)) int isr_nr,
                        __attribute__((unused)) int err_code) {
   pic_send_eoi(isr_nr);
   printk("IRQ0 %d\n", teste++);
+  // delay(20);
 };
