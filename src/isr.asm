@@ -52,7 +52,7 @@ isr_no_error 0x1f ; Reserved
 ; IRQS
 isr_no_error 0x20 ; IRQ 0 - System Timer
 isr_no_error 0x21 ; IRQ 1 - keyboard controller
-isr_no_error 0x22 ; IRQ 2 - Master PIC
+isr_no_error 0x22 ; IRQ 2 - Slave PIC
 isr_no_error 0x23 ; IRQ 3 - serial port 2
 isr_no_error 0x24 ; IRQ 4 - serial port 1
 isr_no_error 0x25 ; IRQ 5 - parallel port 3 or ISA sound card

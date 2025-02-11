@@ -102,7 +102,6 @@ public:
 
 void do_exit(void);
 void do_yield(void);
-extern "C" void scheduler();
 
 // void test_queue();
 

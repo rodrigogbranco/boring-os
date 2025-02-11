@@ -1,7 +1,7 @@
 #include "include/pit.h"
 #include "include/common.h"
 
-#define FREQUENCY_DIVISOR 1193182
+#define FREQUENCY_DIVISOR 1193181
 #define UNMASK_IRQ_0 0xfe
 
 #define MODE_COMMAND_PORT 0x43
