@@ -18,8 +18,9 @@ void thread1() {
 }
 
 void thread2() {
-  int i = 0;
-  while (i++ < 50000) {
+  // int i = 0;
+  while (true) {
+    // while (i++ < 50000) {
     /*carriage_return();
     printk("                         ");
     carriage_return();
